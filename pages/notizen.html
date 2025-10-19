@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Notizen</title>
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="inner container">
+        <div class="logo">📝 Meine Notizen</div>
+        <ul class="nav-links">
+          <li><a href="index.html">Start</a></li>
+          <li><a href="notizen.html">Notizen</a></li>
+          <li><a href="about.html">Über</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Hauptbereich -->
+    <main class="notes">
+      <div class="upper-part">
+        <h1>Meine Notizen</h1>
+        <textarea id="noteInput" placeholder="Schreibe hier deine Notiz..."></textarea>
+        <button class="save-button btn" onclick="saveNote()">Speichern</button>
+      </div>
+
+      <div class="lower-part">
+        <h2>Offene Notizen</h2>
+        <ul id="notesList" aria-live="polite"></ul>
+
+        <h2>Abgeschlossene Notizen</h2>
+        <ul id="doneNotesList" aria-live="polite"></ul>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2025 Meine Notiz-Webseite – Alle Rechte vorbehalten.</p>
+      <nav>
+        <a href="index.html">Start</a> |
+        <a href="notizen.html">Notizen</a> |
+        <a href="about.html">Über</a>
+      </nav>
+    </footer>
+
+    <script src="../script.js"></script>
+  </body>
+</html>
