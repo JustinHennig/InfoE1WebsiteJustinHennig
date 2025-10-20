@@ -248,6 +248,127 @@ footer nav a {
 }
 footer nav a:hover { color: #ffffff; }
 
+
+/* Impressum */
+.impressum-page {
+  max-width: 800px;
+  padding: 3rem 6rem;
+  text-align: left;
+  line-height: 1.6;
+  color: #d1d5db;
+}
+
+.impressum-page h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #f1f5f9;
+}
+
+.impressum-page p {
+  margin-bottom: 1.25rem;
+  color: #cbd5e1;
+}
+
+.impressum-page strong {
+  color: #f9fafb;
+  font-weight: 600;
+}
+
+.impressum-page a {
+  color: #9d00ff;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.impressum-page a:hover {
+  color: #bf3bff;
+  text-decoration: underline;
+}
+
+.impressum-link {
+  color: #94a3b8;
+  text-decoration: none;
+  transition: color .15s ease;
+}
+
+.impressum-link:hover {
+  color: #ffffff;
+}
+
+/* Kontakt */
+.kontakt-page {
+  max-width: 700px;
+  margin: 4rem auto;
+  padding: 4rem 3rem;
+  background: #1a1a1a;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.35);
+  text-align: left;
+  line-height: 1.6;
+  color: #d1d5db;
+}
+
+.kontakt-page h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #f1f5f9;
+}
+
+.kontakt-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.kontakt-form label {
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.kontakt-form input,
+.kontakt-form textarea {
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  background: #2f3037;
+  color: #f9fafb;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kontakt-form input:focus,
+.kontakt-form textarea:focus {
+  outline: none;
+  background: #3a3b42;
+  box-shadow: 0 0 0 2px #9d00ff;
+}
+
+.kontakt-form button {
+  align-self: center;
+  background: #9d00ff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kontakt-form button:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 0 12px rgba(157, 0, 255, 0.6);
+}
+
+@media (max-width: 640px) {
+  .kontakt-page {
+    padding: 2rem 1.25rem;
+  }
+}
+
 .mt-1 { margin-top: .25rem; }
 .mt-2 { margin-top: .5rem; }
 .mt-4 { margin-top: 1rem; }
