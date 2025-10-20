@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Kontakt – Meine Notizen</title>
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="inner container">
+        <div class="logo">📝 Meine Notizen</div>
+        <ul class="nav-links">
+          <li><a href="index.html">Start</a></li>
+          <li><a href="notizen.html">Notizen</a></li>
+          <li><a href="about.html">Über</a></li>
+          <li><a href="kontakt.html" class="active">Kontakt</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="content-section kontakt-page">
+      <h1>Kontakt</h1>
+      <p>Hast du Fragen oder Feedback? Schreibe mir gern eine Nachricht:</p>
+
+      <form class="kontakt-form" action="mailto:max@mustermann.de" method="post" enctype="text/plain">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" required />
+
+        <label for="email">E-Mail</label>
+        <input type="email" id="email" name="email" required />
+
+        <label for="nachricht">Nachricht</label>
+        <textarea id="nachricht" name="nachricht" rows="6" required></textarea>
+
+        <button type="submit">Nachricht senden</button>
+      </form>
+    </main>
+
+    <!-- Footer -->
+<footer>
+  <p>&copy; 2025 Meine Notiz-Webseite – Alle Rechte vorbehalten.</p>
+  <nav>
+    <a href="index.html">Start</a> |
+    <a href="notizen.html">Notizen</a> |
+    <a href="about.html">Über</a> |
+    <a href="kontakt.html">Kontakt</a>
+  </nav>
+  <p><a href="impressum.html" class="impressum-link">Impressum</a></p>
+</footer>
+  </body>
+</html>
