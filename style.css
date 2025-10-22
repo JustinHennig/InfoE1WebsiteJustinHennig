@@ -84,6 +84,77 @@ p  { color: #94a3b8; }
   .navbar > .inner { flex-direction: column; gap: 0.5rem; }
 }
 
+/* Footer */
+.footer {
+  color: #d1d5db;
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+.footer-nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.footer-nav a {
+  color: #e5e7eb;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-nav a:hover {
+  color: #9ca3af;
+}
+
+.footer-bottom {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; /* links | mitte | rechts */
+  align-items: center;
+  gap: 1rem;
+  padding-top: 1rem;
+  font-size: 0.95rem;
+}
+
+.footer-email {
+  color: #a1a1aa;
+  text-decoration: none;
+}
+
+.footer-email:hover {
+  text-decoration: underline;
+}
+
+.scroll-top {
+  background: none;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 1rem;
+  cursor: pointer;
+  font-weight: 400;
+  transition: color 0.2s ease;
+}
+
+.scroll-top:hover {
+  color: #9ca3af;
+  box-shadow: none;
+}
+
+.footer-copy {
+  margin: 0;
+  color: #a1a1aa;
+}
+
+@media (max-width: 640px) {
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
 /* Buttons */
 button, .btn {
   appearance: none;
@@ -251,7 +322,6 @@ footer nav a:hover { color: #ffffff; }
 
 /* Impressum */
 .impressum-page {
-  max-width: 800px;
   padding: 3rem 6rem;
   text-align: left;
   line-height: 1.6;
@@ -336,6 +406,12 @@ footer nav a:hover { color: #ffffff; }
   font-size: 1rem;
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kontakt-form textarea {
+  resize: vertical;
+  max-height: 400px;
+  min-height: 140px;
 }
 
 .kontakt-form input:focus,

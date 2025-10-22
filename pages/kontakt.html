@@ -24,7 +24,12 @@
       <h1>Kontakt</h1>
       <p>Hast du Fragen oder Feedback? Schreibe mir gern eine Nachricht:</p>
 
-      <form class="kontakt-form" action="mailto:max@mustermann.de" method="post" enctype="text/plain">
+      <form
+        class="kontakt-form"
+        action="mailto:max@mustermann.de"
+        method="post"
+        enctype="text/plain"
+      >
         <label for="name">Name</label>
         <input type="text" id="name" name="name" required />
 
@@ -39,15 +44,21 @@
     </main>
 
     <!-- Footer -->
-<footer>
-  <p>&copy; 2025 Meine Notiz-Webseite – Alle Rechte vorbehalten.</p>
-  <nav>
-    <a href="index.html">Start</a> |
-    <a href="notizen.html">Notizen</a> |
-    <a href="about.html">Über</a> |
-    <a href="kontakt.html">Kontakt</a>
-  </nav>
-  <p><a href="impressum.html" class="impressum-link">Impressum</a></p>
-</footer>
+    <footer class="footer">
+      <nav class="footer-nav">
+        <a href="index.html">Start</a>
+        <a href="notizen.html">Notizen</a>
+        <a href="about.html">Über</a>
+        <a href="kontakt.html">Kontakt</a>
+        <a href="impressum.html">Impressum</a>
+      </nav>
+      <div class="footer-bottom">
+        <a href="mailto:justin.ziyou.hennig@gmail.com" class="footer-email">justin.ziyou.hennig@gmail.com</a>
+        <button class="scroll-top" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+          Nach oben
+        </button>
+        <p class="footer-copy">&copy; 2025 Meine Notiz-Webseite – Alle Rechte vorbehalten.</p>
+      </div>
+    </footer>
   </body>
 </html>

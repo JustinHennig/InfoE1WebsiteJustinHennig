@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <title>Über diese Seite</title>
-  <!-- Verknüpfung mit deiner CSS-Datei -->
-  <link rel="stylesheet" href="../style.css">
-</head>
-<body>
-
-  <!-- Navbar -->
+  <head>
+    <meta charset="UTF-8" />
+    <title>Über diese Seite</title>
+    <!-- Verknüpfung mit deiner CSS-Datei -->
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <!-- Navbar -->
     <nav class="navbar">
       <div class="inner container">
         <div class="logo">📝 Meine Notizen</div>
@@ -21,26 +20,33 @@
       </div>
     </nav>
 
-  <!-- Hauptinhalt -->
-  <main class="hero-section">
-    <h1>Über diese Webseite</h1>
-    <p>
-      Dies ist ein <strong>Schulprojekt</strong> für den Info-Unterricht (E1). <br>
-      Hier kannst du ganz einfach Notizen eingeben und im Local Storage vom Browser speichern.
-    </p>
-  </main>
+    <!-- Hauptinhalt -->
+    <main class="hero-section">
+      <h1>Über diese Webseite</h1>
+      <p>
+        Dies ist ein <strong>Schulprojekt</strong> für den Info-Unterricht (E1).
+        <br />
+        Hier kannst du ganz einfach Notizen eingeben und im Local Storage vom
+        Browser speichern.
+      </p>
+    </main>
 
-  <!-- Footer -->
-  <footer>
-  <p>&copy; 2025 Meine Notiz-Webseite – Alle Rechte vorbehalten.</p>
-  <nav>
-   <a href="index.html">Start</a> |
-    <a href="notizen.html">Notizen</a> |
-    <a href="about.html">Über</a> |
-    <a href="kontakt.html">Kontakt</a>
-  </nav>
-  <p><a href="impressum.html" class="impressum-link">Impressum</a></p>
-</footer>
-
-</body>
+    <!-- Footer -->
+    <footer class="footer">
+      <nav class="footer-nav">
+        <a href="index.html">Start</a>
+        <a href="notizen.html">Notizen</a>
+        <a href="about.html">Über</a>
+        <a href="kontakt.html">Kontakt</a>
+        <a href="impressum.html">Impressum</a>
+      </nav>
+      <div class="footer-bottom">
+        <a href="mailto:justin.ziyou.hennig@gmail.com" class="footer-email">justin.ziyou.hennig@gmail.com</a>
+        <button class="scroll-top" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+          Nach oben
+        </button>
+        <p class="footer-copy">&copy; 2025 Meine Notiz-Webseite – Alle Rechte vorbehalten.</p>
+      </div>
+    </footer>
+  </body>
 </html>
