@@ -2,8 +2,8 @@
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
-    <title>Meine Notizen - Start</title>
-    <link rel="stylesheet" href="../style.css" />
+    <title>Kontakt – Meine Notizen</title>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <!-- Navbar -->
@@ -20,9 +20,27 @@
     </nav>
 
     <!-- Main -->
-    <main class="hero-section">
-      <h1>Willkommen bei meiner Notiz-Webseite</h1>
-      <p>Hier kannst du deine eigenen Notizen speichern.</p>
+    <main class="content-section kontakt-page">
+      <h1>Kontakt</h1>
+      <p>Hast du Fragen oder Feedback? Schreibe mir gern eine Nachricht:</p>
+
+      <form
+        class="kontakt-form"
+        action="mailto:max@mustermann.de"
+        method="post"
+        enctype="text/plain"
+      >
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" required />
+
+        <label for="email">E-Mail</label>
+        <input type="email" id="email" name="email" required />
+
+        <label for="nachricht">Nachricht</label>
+        <textarea id="nachricht" name="nachricht" rows="6" required></textarea>
+
+        <button type="submit">Nachricht senden</button>
+      </form>
     </main>
 
     <!-- Footer -->
