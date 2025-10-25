@@ -456,3 +456,29 @@ footer nav a:hover { color: #ffffff; }
   body { background: #fff; color: #000; }
   main { padding: 0; }
 }
+
+/* Mobile Optimierungen */
+@media (max-width: 640px) {
+  /* Typo leicht größer/robuster */
+  h1 { font-size: clamp(1.6rem, 6vw, 2.2rem); }
+  h2 { font-size: clamp(1.2rem, 4.5vw, 1.6rem); }
+
+  /* Container voll nutzen */
+  .container { max-width: 100%; padding: 0 1rem; }
+
+  /* Inputs/Notizen nicht einengen */
+  #noteInput { width: 100%; }
+  .notes .lower-part { width: 100%; }
+
+  /* Navbar: sauber stapeln */
+  .navbar > .inner { width: 100%; }
+  .nav-links { flex-wrap: wrap; justify-content: center; }
+
+  /* Footer: Grid -> Spalte */
+  .footer-bottom {
+    display: flex;         /* wichtig: Grid überschreiben */
+    flex-direction: column;
+    gap: .5rem;
+    text-align: center;
+  }
+}
