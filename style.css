@@ -420,47 +420,50 @@ button:disabled, .btn:disabled {
 
 /* Impressum */
 .impressum-page {
-  padding: 3rem 6rem;
+  max-width: 700px;
+  margin: 4rem auto;
+  padding: 3rem 2rem;
   text-align: left;
   line-height: 1.6;
   color: var(--text);
+  border-radius: 12px;
 }
 
 .impressum-page h1 {
   text-align: center;
   margin-bottom: 2rem;
-  color: #f1f5f9;
+  color: var(--text);
 }
 
 .impressum-page p {
   margin-bottom: 1.25rem;
-  color: #cbd5e1;
+  color: var(--text-muted);
 }
 
 .impressum-page strong {
-  color: #f9fafb;
+  color: var(--text);
   font-weight: 600;
 }
 
 .impressum-page a {
-  color: #9d00ff;
+  color: var(--accent);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .impressum-page a:hover {
-  color: #bf3bff;
+  color: var(--accent-strong);
   text-decoration: underline;
 }
 
 .impressum-link {
-  color: #94a3b8;
+  color: var(--text-muted);
   text-decoration: none;
   transition: color .15s ease;
 }
 
 .impressum-link:hover {
-  color: #ffffff;
+  color: var(--text);
 }
 
 /* Kontakt */
