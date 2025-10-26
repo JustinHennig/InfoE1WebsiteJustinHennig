@@ -64,19 +64,13 @@
       <form id="contactForm" class="kontakt-form">
         <label>Name</label>
         <input type="text" name="name" required />
-      
         <label>E-Mail</label>
         <input type="email" name="email" required />
-      
         <label>Nachricht</label>
         <textarea name="message" rows="6" required></textarea>
-      
         <button type="submit">Nachricht senden</button>
       </form>
-      
-      <p id="formStatus" class="mt-2" aria-live="polite"></p>
     </main>
-
     <div id="popup" class="popup hidden">
       <div class="popup-content">
         <span id="popupMessage">✅ Nachricht gesendet!</span>
@@ -107,8 +101,8 @@
         </p>
       </div>
     </footer>
+    <!-- <script> ist hier, da es sonst nicht funktioniert -->
     <script src="js/formspree-email.js"></script>
     <script src="js/theme.js"></script>
-    <!-- <script> ist hier, da es sonst nicht funktioniert -->
   </body>
 </html>
