@@ -10,6 +10,19 @@
     />
     <meta name="theme-color" content="#000000" />
     <title>Über diese Seite</title>
+    <!-- Theme sofort anwenden, bevor gerendert wird, um Farbspruenge zu vermeiden -->
+    <script>
+      (function () {
+        const saved = localStorage.getItem("theme");
+        const prefersLight = window.matchMedia(
+          "(prefers-color-scheme: light)"
+        ).matches;
+        const isLight = saved ? saved === "light" : prefersLight;
+        if (isLight) {
+          document.documentElement.classList.add("theme-light");
+        }
+      })();
+    </script>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -79,5 +92,6 @@
       </div>
     </footer>
     <script src="theme.js"></script>
+    <!-- <script> ist hier, da es sonst nicht funktioniert -->
   </body>
 </html>

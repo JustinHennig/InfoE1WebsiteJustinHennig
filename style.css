@@ -21,7 +21,7 @@
   --text: #0f172a;
   --text-muted: #475569;
   --card: #ffffff;
-  --surface: #eef2f7;
+  --surface: #d4d8de;
   --border: #e2e8f0;
   --footer-bg: #0f172a;
   --link: #e5e7eb;
@@ -55,6 +55,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  overflow-y: scroll;
 }
 
 /* Layout helpers */
@@ -467,7 +468,7 @@ button:disabled, .btn:disabled {
 .kontakt-page h1 {
   text-align: center;
   margin-bottom: 2rem;
-  color: #f1f5f9;
+  color: var(--text);
 }
 
 .kontakt-form {
@@ -478,7 +479,7 @@ button:disabled, .btn:disabled {
 
 .kontakt-form label {
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--text);
 }
 
 .kontakt-form input,
