@@ -335,6 +335,17 @@ button:disabled, .btn:disabled {
   gap: 0.85rem;
 }
 
+.note-text {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0.15rem 1rem 0.4rem;
+  border-radius: 9999px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 .note-item {
   background: var(--surface);
   color: var(--text);
@@ -356,18 +367,18 @@ button:disabled, .btn:disabled {
   color: var(--text-muted);
   opacity: 0.7;
 }
-
-.note-text {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  min-height: 34px;
-  padding: 0.15rem 1rem 0.4rem;
-  border-radius: 9999px;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
 .note-actions { display: flex; gap: 0.4rem; }
+
+.note-date {
+  font-size: .8rem;
+  color: var(--text-muted);
+  margin-left: 1rem;
+  opacity: .8;
+}
+.note-date {
+  text-decoration: none;
+  opacity: .6;
+}
 
 /* Runde Buttons */
 .btn-round {

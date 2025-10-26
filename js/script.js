@@ -16,16 +16,16 @@ function saveNotes(notes) {
 /* ---- Anzeige ---- */
 function showNotes() {
   const notesList = document.getElementById("notesList");
-  const doneList  = document.getElementById("doneNotesList");
+  const doneList = document.getElementById("doneNotesList");
   if (!notesList || !doneList) return;
 
   const notes = loadNotes();
   notesList.innerHTML = "";
-  doneList.innerHTML  = "";
+  doneList.innerHTML = "";
 
   if (notes.length === 0) {
     notesList.innerHTML = `<li class="note-item"><div class="note-text">Noch keine Notizen gespeichert.</div></li>`;
-    doneList.innerHTML  = `<li class="note-item"><div class="note-text">Keine abgeschlossenen Notizen.</div></li>`;
+    doneList.innerHTML = `<li class="note-item"><div class="note-text">Keine abgeschlossenen Notizen.</div></li>`;
     return;
   }
 
@@ -37,6 +37,19 @@ function showNotes() {
     const textDiv = document.createElement("div");
     textDiv.className = "note-text";
     textDiv.textContent = note.text;
+
+    const dateDiv = document.createElement("div");
+    dateDiv.className = "note-date";
+    // Datum formatieren
+    const createdDate = new Date(note.createdAt);
+    dateDiv.textContent = createdDate.toLocaleString("de-DE", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    li.appendChild(dateDiv);
 
     const actions = document.createElement("div");
     actions.className = "note-actions";
@@ -58,6 +71,7 @@ function showNotes() {
     actions.appendChild(okBtn);
     actions.appendChild(delBtn);
     li.appendChild(textDiv);
+    li.appendChild(dateDiv);
     li.appendChild(actions);
 
     (note.done ? doneList : notesList).appendChild(li);
@@ -83,9 +97,10 @@ function saveNote() {
 
   // Jede Notiz hat eine eindeutige ID
   const newNote = {
-    id: Date.now(), // alternativ: Date.now()
+    id: Date.now(),
     text: noteText,
     done: false,
+    createdAt: new Date().toISOString(),
   };
 
   notes.unshift(newNote);
