@@ -537,10 +537,17 @@ button:disabled, .btn:disabled {
   box-shadow: 0 0 12px rgba(157, 0, 255, 0.6);
 }
 
-@media (max-width: 640px) {
-  .kontakt-page {
-    padding: 2rem 1.25rem;
-  }
+.kontakt-form input:-webkit-autofill,
+.kontakt-form input:-webkit-autofill:hover,
+.kontakt-form input:-webkit-autofill:focus,
+.kontakt-form textarea:-webkit-autofill,
+.kontakt-form textarea:-webkit-autofill:hover,
+.kontakt-form textarea:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text) !important;
+  caret-color: var(--text);
+  -webkit-box-shadow: 0 0 0 1000px var(--surface) inset !important;
+  box-shadow: 0 0 0 1000px var(--surface) inset !important;
+  transition: box-shadow .2s ease, color .2s ease;
 }
 
 .mt-1 { margin-top: .25rem; }
@@ -573,5 +580,9 @@ button:disabled, .btn:disabled {
     flex-direction: column;
     gap: .5rem;
     text-align: center;
+  }
+
+  .kontakt-page {
+    padding: 2rem 1.25rem;
   }
 }
