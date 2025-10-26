@@ -30,24 +30,24 @@
     <nav class="navbar">
       <div class="inner container">
         <div class="logo">📝 Meine Notizen</div>
-        <ul class="nav-links">
+        <!-- Hamburger-Button (mobil sichtbar) -->
+        <button id="navToggle"
+                class="nav-toggle"
+                aria-label="Menü öffnen"
+                aria-controls="navMenu"
+                aria-expanded="false">
+          <span class="nav-toggle__bar"></span>
+          <span class="nav-toggle__bar"></span>
+          <span class="nav-toggle__bar"></span>
+        </button>
+        <ul id="navMenu" class="nav-links">
           <li><a href="index.html">Start</a></li>
           <li><a href="notizen.html">Notizen</a></li>
           <li><a href="about.html">Über</a></li>
           <li><a href="kontakt.html" class="active">Kontakt</a></li>
         </ul>
-        <input
-          id="themeToggle"
-          type="checkbox"
-          role="switch"
-          aria-label="Theme umschalten"
-          hidden
-        />
-        <label
-          for="themeToggle"
-          class="theme-switch"
-          title="Dark/Light wechseln"
-        >
+        <input id="themeToggle" type="checkbox" role="switch" aria-label="Theme umschalten" hidden />
+        <label for="themeToggle" class="theme-switch" title="Dark/Light wechseln">
           <span class="theme-switch__knob">
             <span class="icon icon--sun" aria-hidden="true">☀️</span>
             <span class="icon icon--moon" aria-hidden="true">🌙</span>
@@ -112,6 +112,7 @@
         </p>
       </div>
     </footer>
+    <script src="js/navbar.js"></script>
     <script src="js/theme.js"></script>
     <!-- <script> ist hier, da es sonst nicht funktioniert -->
   </body>

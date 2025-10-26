@@ -130,6 +130,82 @@ p  { color: var(--text-muted); }
 @media (max-width: 640px) {
   .navbar > .inner { flex-direction: column; gap: 0.5rem; }
 }
+/* Hamburger-Button */
+.nav-toggle {
+  display: none;
+  background: transparent;
+  border: 0;
+  width: 40px;
+  height: 40px;
+  margin-left: auto;
+  position: relative;
+  cursor: pointer;
+  color: var(--link);
+}
+.nav-toggle:focus,
+.nav-toggle:focus-visible,
+.nav-toggle:hover {
+  outline: none;
+  box-shadow: none;
+}
+.nav-toggle__bar {
+  position: absolute;
+  left: 8px; right: 8px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  transition: transform .2s ease, opacity .2s ease, top .2s ease;
+}
+.nav-toggle__bar:nth-child(1) { top: 12px; }
+.nav-toggle__bar:nth-child(2) { top: 19px; }
+.nav-toggle__bar:nth-child(3) { top: 26px; }
+
+@media (max-width: 640px) {
+  .navbar > .inner {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: .5rem;
+  }
+  .nav-toggle { display: inline-block; }
+
+  .nav-links {
+    grid-column: 1 / -1;
+    width: 100%;
+    display: block;
+    margin: .5rem 0 0;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: max-height .25s ease, opacity .2s ease, transform .2s ease, visibility 0s linear .25s;
+  }
+  .nav-links li { margin: .5rem 0; }
+  .nav-links a { display: block; padding: .25rem 0; }
+
+  .navbar.is-open .nav-links {
+    max-height: 320px;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition: max-height .25s ease, opacity .2s ease, transform .2s ease;
+  }
+
+  .navbar.is-open .nav-toggle__bar:nth-child(1) {
+    top: 19px; transform: rotate(45deg);
+  }
+  .navbar.is-open .nav-toggle__bar:nth-child(2) {
+    opacity: 0;
+  }
+  .navbar.is-open .nav-toggle__bar:nth-child(3) {
+    top: 19px; transform: rotate(-45deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-links, .nav-toggle__bar { transition: none; }
+}
 
 /* Footer */
 .footer {
@@ -244,6 +320,44 @@ button:disabled, .btn:disabled {
   background: var(--toggle-track-dark);
   box-shadow: none;
   transition: background-color .25s ease;
+}
+
+/* Runde Buttons */
+.btn-round {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  cursor: pointer;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: transform .08s ease, box-shadow .25s ease, background .25s ease;
+}
+.btn-round--ok {
+  background: #16a34a;
+}
+.btn-round--ok:hover {
+  background: #22c55e;
+  box-shadow:
+    0 0 8px rgba(34, 197, 94, 0.6),
+    0 0 20px rgba(34, 197, 94, 0.4);
+}
+.btn-round--del {
+  background: #dc2626;
+}
+.btn-round--del:hover {
+  background: #ef4444;
+  box-shadow:
+    0 0 8px rgba(239, 68, 68, 0.6),
+    0 0 20px rgba(239, 68, 68, 0.4);
+}
+.btn-round:active { transform: translateY(1px); }
+.btn-round:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 5px rgba(59,130,246,0.6);
 }
 
 /* Knopf */
@@ -378,44 +492,6 @@ button:disabled, .btn:disabled {
 .note-date {
   text-decoration: none;
   opacity: .6;
-}
-
-/* Runde Buttons */
-.btn-round {
-  width: 34px; height: 34px;
-  border-radius: 50%;
-  border: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.95rem;
-  cursor: pointer;
-  color: #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-  transition: transform .08s ease, box-shadow .25s ease, background .25s ease;
-}
-.btn-round--ok {
-  background: #16a34a;
-}
-.btn-round--ok:hover {
-  background: #22c55e;
-  box-shadow:
-    0 0 8px rgba(34, 197, 94, 0.6),
-    0 0 20px rgba(34, 197, 94, 0.4);
-}
-.btn-round--del {
-  background: #dc2626;
-}
-.btn-round--del:hover {
-  background: #ef4444;
-  box-shadow:
-    0 0 8px rgba(239, 68, 68, 0.6),
-    0 0 20px rgba(239, 68, 68, 0.4);
-}
-.btn-round:active { transform: translateY(1px); }
-.btn-round:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px #fff, 0 0 0 5px rgba(59,130,246,0.6);
 }
 
 /* Impressum */
