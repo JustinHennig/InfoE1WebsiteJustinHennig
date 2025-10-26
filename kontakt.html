@@ -10,7 +10,8 @@
     />
     <meta name="theme-color" content="#000000" />
     <title>Kontakt – Meine Notizen</title>
-    <!-- Theme sofort anwenden, bevor gerendert wird, um Farbspruenge zu vermeiden -->
+    <!-- Theme sofort anwenden, bevor gerendert wird, um Farbspruenge zu vermeiden. 
+      Deshalb auch nicht seperat in einem File -->
     <script>
       (function () {
         const saved = localStorage.getItem("theme");
@@ -60,25 +61,27 @@
     <main class="content-section kontakt-page">
       <h1>Kontakt</h1>
       <p>Hast du Fragen oder Feedback? Schreibe mir gern eine Nachricht:</p>
-
-      <form
-        class="kontakt-form"
-        action="mailto:max@mustermann.de"
-        method="post"
-        enctype="text/plain"
-      >
-        <label for="name">Name</label>
-        <input type="text" id="name" name="name" required />
-
-        <label for="email">E-Mail</label>
-        <input type="email" id="email" name="email" required />
-
-        <label for="nachricht">Nachricht</label>
-        <textarea id="nachricht" name="nachricht" rows="6" required></textarea>
-
+      <form id="contactForm" class="kontakt-form">
+        <label>Name</label>
+        <input type="text" name="name" required />
+      
+        <label>E-Mail</label>
+        <input type="email" name="email" required />
+      
+        <label>Nachricht</label>
+        <textarea name="message" rows="6" required></textarea>
+      
         <button type="submit">Nachricht senden</button>
       </form>
+      
+      <p id="formStatus" class="mt-2" aria-live="polite"></p>
     </main>
+
+    <div id="popup" class="popup hidden">
+      <div class="popup-content">
+        <span id="popupMessage">✅ Nachricht gesendet!</span>
+      </div>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">
@@ -104,6 +107,7 @@
         </p>
       </div>
     </footer>
+    <script src="js/formspree-email.js"></script>
     <script src="js/theme.js"></script>
     <!-- <script> ist hier, da es sonst nicht funktioniert -->
   </body>

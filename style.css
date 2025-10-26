@@ -553,6 +553,43 @@ button:disabled, .btn:disabled {
   transition: box-shadow .2s ease, color .2s ease;
 }
 
+/* Popup Overlay */
+.popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity .3s ease;
+}
+
+/* Startzustand, unsichtbar */
+.popup.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.popup-content {
+  background: var(--card);
+  color: var(--text);
+  padding: 1.25rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.4);
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  animation: popIn .25s ease;
+}
+
+/* kleine Smooth-Scale Animation */
+@keyframes popIn {
+  from { transform: scale(.85); opacity: .5; }
+  to { transform: scale(1); opacity: 1; }
+}
+
 .mt-1 { margin-top: .25rem; }
 .mt-2 { margin-top: .5rem; }
 .mt-4 { margin-top: 1rem; }
