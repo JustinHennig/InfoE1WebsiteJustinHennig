@@ -834,30 +834,13 @@ button:disabled,
     padding: 2rem 1.25rem;
   }
 
-button,
-label,
-a {
-  -webkit-tap-highlight-color: transparent;
-}
-
-button:focus:not(:focus-visible),
-label:focus:not(:focus-visible),
-a:focus:not(:focus-visible) {
-  outline: none;
-  box-shadow: none;
-}
-
-.nav-toggle,
-.theme-switch {
-  -webkit-tap-highlight-color: transparent;
-}
-
-.nav-toggle:focus,
-.nav-toggle:active,
-.theme-switch:focus,
-.theme-switch:active {
-  outline: none;
-  box-shadow: none;
-  background: none;
-}
+  button,
+  label,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-toggle,
+  .theme-switch {
+    -webkit-tap-highlight-color: transparent;
+  }
 }
