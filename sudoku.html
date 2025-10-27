@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de" class="theme-dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sudoku | Meine Notizen</title>
+    <!-- Theme sofort anwenden, bevor gerendert wird, um Farbspruenge zu vermeiden -->
+    <script>
+      (function () {
+        const saved = localStorage.getItem("theme");
+        const prefersLight = window.matchMedia(
+          "(prefers-color-scheme: light)"
+        ).matches;
+        const isLight = saved ? saved === "light" : prefersLight;
+        if (isLight) {
+          document.documentElement.classList.add("theme-light");
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="style.css" />
+    <script defer src="js/script.js"></script>
+    <script defer src="js/sudoku.js"></script>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="inner container">
+        <div class="logo">📝 Meine Notizen</div>
+        <!-- Theme-Toggle -->
+        <input
+          id="themeToggle"
+          type="checkbox"
+          role="switch"
+          aria-label="Theme umschalten"
+          hidden
+        />
+        <label
+          for="themeToggle"
+          class="theme-switch"
+          title="Dark/Light wechseln"
+        >
+          <span class="theme-switch__knob">
+            <span class="icon icon--sun" aria-hidden="true">☀️</span>
+            <span class="icon icon--moon" aria-hidden="true">🌙</span>
+          </span>
+        </label>
+        <!-- Hamburger-Button (mobil sichtbar) -->
+        <button
+          id="navToggle"
+          class="nav-toggle"
+          aria-label="Menü öffnen"
+          aria-controls="navMenu"
+          aria-expanded="false"
+        >
+          <span class="nav-toggle__bar"></span>
+          <span class="nav-toggle__bar"></span>
+          <span class="nav-toggle__bar"></span>
+        </button>
+        <ul id="navMenu" class="nav-links">
+          <li><a href="index.html">Start</a></li>
+          <li><a href="notizen.html">Notizen</a></li>
+          <li><a href="about.html">Über</a></li>
+          <li><a href="kontakt.html" class="active">Kontakt</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="sudoku-page container">
+      <h1>Sudoku</h1>
+      <p>
+        Fülle das Sudoku-Gitter aus, sodass jede Zeile, Spalte und jeder Block
+        die Zahlen 1 bis 9 enthält.
+      </p>
+
+      <div id="sudoku-board" class="sudoku-board"></div>
+
+      <div class="sudoku-controls mt-4">
+        <button id="newSudoku" class="btn">Neues Sudoku</button>
+        <button id="checkSudoku" class="btn">Prüfen</button>
+        <button id="solveSudoku" class="btn">Lösen</button>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <nav class="footer-nav">
+        <a href="index.html">Start</a>
+        <a href="notizen.html">Notizen</a>
+        <a href="about.html">Über</a>
+        <a href="kontakt.html">Kontakt</a>
+        <a href="impressum.html">Impressum</a>
+      </nav>
+      <div class="footer-bottom">
+        <a href="mailto:justin.ziyou.hennig@gmail.com" class="footer-email"
+          >justin.ziyou.hennig@gmail.com</a
+        >
+        <button
+          class="scroll-top"
+          onclick="window.scrollTo({top:0, behavior:'smooth'})"
+        >
+          Nach oben
+        </button>
+        <p class="footer-copy">
+          &copy; 2025 Meine Notiz-Webseite – Alle Rechte vorbehalten.
+        </p>
+      </div>
+    </footer>
+    <script src="js/navbar.js"></script>
+    <script src="js/theme.js"></script>
+    <!-- <script> ist hier, da es sonst nicht funktioniert -->
+  </body>
+</html>
