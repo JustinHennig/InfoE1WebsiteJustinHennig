@@ -31,12 +31,32 @@
     <nav class="navbar">
       <div class="inner container">
         <div class="logo">📝 Meine Notizen</div>
+        <!-- Theme-Toggle -->
+        <input
+          id="themeToggle"
+          type="checkbox"
+          role="switch"
+          aria-label="Theme umschalten"
+          hidden
+        />
+        <label
+          for="themeToggle"
+          class="theme-switch"
+          title="Dark/Light wechseln"
+        >
+          <span class="theme-switch__knob">
+            <span class="icon icon--sun" aria-hidden="true">☀️</span>
+            <span class="icon icon--moon" aria-hidden="true">🌙</span>
+          </span>
+        </label>
         <!-- Hamburger-Button (mobil sichtbar) -->
-        <button id="navToggle"
-                class="nav-toggle"
-                aria-label="Menü öffnen"
-                aria-controls="navMenu"
-                aria-expanded="false">
+        <button
+          id="navToggle"
+          class="nav-toggle"
+          aria-label="Menü öffnen"
+          aria-controls="navMenu"
+          aria-expanded="false"
+        >
           <span class="nav-toggle__bar"></span>
           <span class="nav-toggle__bar"></span>
           <span class="nav-toggle__bar"></span>
@@ -47,13 +67,6 @@
           <li><a href="about.html">Über</a></li>
           <li><a href="kontakt.html" class="active">Kontakt</a></li>
         </ul>
-        <input id="themeToggle" type="checkbox" role="switch" aria-label="Theme umschalten" hidden />
-        <label for="themeToggle" class="theme-switch" title="Dark/Light wechseln">
-          <span class="theme-switch__knob">
-            <span class="icon icon--sun" aria-hidden="true">☀️</span>
-            <span class="icon icon--moon" aria-hidden="true">🌙</span>
-          </span>
-        </label>
       </div>
     </nav>
 
