@@ -836,9 +836,7 @@ button:disabled,
 
   button,
   label,
-  a {
-    -webkit-tap-highlight-color: transparent;
-  }
+  a,
   .nav-toggle,
   .theme-switch {
     -webkit-tap-highlight-color: transparent;
