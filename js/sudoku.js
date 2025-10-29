@@ -190,23 +190,22 @@
   }
 
   function solveSudoku() {
-  if (!originalPuzzle) {
-    alert("❗ Bitte zuerst ein Sudoku generieren.");
-    return;
+    if (!originalPuzzle) {
+      alert("❗ Bitte zuerst ein Sudoku generieren.");
+      return;
+    }
+
+    // Arbeitskopie des ursprünglichen Sudokus
+    const grid = JSON.parse(JSON.stringify(originalPuzzle));
+
+    // Sudoku lösen – garantiert möglich
+    if (solve(grid)) {
+      setGrid(grid, false); // zeige die Lösung
+      alert("✅ Sudoku vollständig gelöst!");
+    } else {
+      alert("❌ Keine Lösung gefunden – sollte eigentlich nie passieren.");
+    }
   }
-
-  // Arbeitskopie des ursprünglichen Sudokus
-  const grid = JSON.parse(JSON.stringify(originalPuzzle));
-
-  // Sudoku lösen – garantiert möglich
-  if (solve(grid)) {
-    setGrid(grid, false); // zeige die Lösung
-    alert("✅ Sudoku vollständig gelöst!");
-  } else {
-    alert("❌ Keine Lösung gefunden – sollte eigentlich nie passieren.");
-  }
-}
-
 
   // =============================
   // 5️⃣ EVENTS
@@ -224,4 +223,30 @@
   // Start
   createBoard();
   fillRandomSudoku();
+
+  // =============================
+  // 6️⃣ MOBILE ZAHLENTASTATUR
+  // =============================
+  const keypad = document.getElementById("sudokuKeypad");
+  let selectedCell = null;
+
+  if (keypad) {
+    board.addEventListener("click", (e) => {
+      if (e.target.tagName === "INPUT") {
+        selectedCell = e.target;
+        board
+          .querySelectorAll("input")
+          .forEach((c) => c.classList.remove("active"));
+        selectedCell.classList.add("active");
+      }
+    });
+
+    keypad.addEventListener("click", (e) => {
+      if (!selectedCell) return;
+      const num = e.target.dataset.num;
+      if (num === undefined) return;
+
+      selectedCell.value = num;
+    });
+  }
 })();

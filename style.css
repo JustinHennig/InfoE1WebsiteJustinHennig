@@ -854,32 +854,59 @@ button:disabled,
   box-sizing: border-box;
 }
 
-/* Basis für alle Zellen */
 .sudoku-board input {
   width: 40px;
   height: 40px;
-  box-sizing: border-box;
   text-align: center;
   font-size: 1.2rem;
   border: 1px solid var(--border);
   background: var(--card);
   color: var(--text);
   outline: none;
+  box-sizing: border-box;
 }
 
 .sudoku-board input:nth-child(3n) {
   border-right-width: 2px;
 }
-
-.sudoku-board input:nth-child(n + 28):nth-child(-n + 36) {
-  border-top-width: 2px;
-}
-
+.sudoku-board input:nth-child(n + 28):nth-child(-n + 36),
 .sudoku-board input:nth-child(n + 55):nth-child(-n + 63) {
   border-top-width: 2px;
 }
-
 .sudoku-board input:nth-child(27),
 .sudoku-board input:nth-child(54) {
   border-bottom-width: 2px;
+}
+
+.sudoku-keypad {
+  display: none;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  max-width: 280px;
+  margin: 1.5rem auto 0;
+}
+
+.sudoku-keypad button {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem 0;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.sudoku-keypad button:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+@media (max-width: 640px) {
+  .sudoku-board input {
+    pointer-events: none;
+  }
+  .sudoku-keypad {
+    display: grid;
+  }
 }
