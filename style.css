@@ -844,10 +844,6 @@ button:disabled,
 }
 
 /* Sudoku */
-.sudoku-page {
-  text-align: center;
-}
-
 .sudoku-board {
   display: grid;
   grid-template-columns: repeat(9, 40px);
@@ -855,11 +851,14 @@ button:disabled,
   justify-content: center;
   margin: 2rem auto;
   border: 2px solid var(--text);
+  box-sizing: border-box;
 }
 
+/* Basis für alle Zellen */
 .sudoku-board input {
   width: 40px;
   height: 40px;
+  box-sizing: border-box;
   text-align: center;
   font-size: 1.2rem;
   border: 1px solid var(--border);
@@ -868,16 +867,19 @@ button:disabled,
   outline: none;
 }
 
-.sudoku-board input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 4px var(--accent);
+.sudoku-board input:nth-child(3n) {
+  border-right-width: 2px;
 }
 
-/* Dicke Linien für Blöcke */
-.sudoku-board input:nth-child(3n+1) {
-  border-left-width: 2px;
-}
-.sudoku-board input:nth-child(n+19):nth-child(-n+27),
-.sudoku-board input:nth-child(n+46):nth-child(-n+54) {
+.sudoku-board input:nth-child(n + 28):nth-child(-n + 36) {
   border-top-width: 2px;
+}
+
+.sudoku-board input:nth-child(n + 55):nth-child(-n + 63) {
+  border-top-width: 2px;
+}
+
+.sudoku-board input:nth-child(27),
+.sudoku-board input:nth-child(54) {
+  border-bottom-width: 2px;
 }
