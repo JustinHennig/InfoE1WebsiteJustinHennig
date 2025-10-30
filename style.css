@@ -136,6 +136,13 @@ p {
   justify-content: space-between;
   padding: 0.9rem 1rem;
 }
+
+.navbar .inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+}
 .logo {
   font-weight: 700;
   font-size: 1.1rem;
@@ -266,6 +273,29 @@ p {
 
   .logo {
     order: 1;
+  }
+}
+
+@media (min-width: 768px) {
+  .navbar .inner {
+    display: grid;
+    grid-template-columns: auto 1fr auto; /* Logo | Menü | Toggle */
+    align-items: center;
+  }
+
+  .nav-links {
+    justify-content: center; /* Menü zentriert */
+  }
+
+  /* Theme-Schalter ganz rechts */
+  .theme-switch {
+    justify-self: end;
+    margin-left: auto;
+  }
+
+  /* Hamburger-Icon nur mobil */
+  .nav-toggle {
+    display: none;
   }
 }
 
