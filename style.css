@@ -904,9 +904,16 @@ button:disabled,
 
 @media (max-width: 640px) {
   .sudoku-board input {
-    pointer-events: none;
+    caret-color: transparent;
+    user-select: none;
   }
+
   .sudoku-keypad {
     display: grid;
+  }
+
+  .sudoku-board input.active {
+    outline: 2px solid var(--accent);
+    outline-offset: -1px;
   }
 }
