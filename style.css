@@ -959,7 +959,7 @@ button:disabled,
     justify-content: center;
   }
   .sudoku-board {
-    --cell: calc((min(92vw, 400px)) / 9);
+    --cell: calc((min(90vw)) / 9);
     width: calc(var(--cell) * 9);
   }
   .sudoku-board input { font-size: calc(var(--cell) * 0.6); }
