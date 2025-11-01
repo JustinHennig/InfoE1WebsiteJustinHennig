@@ -15,6 +15,15 @@
       input.addEventListener("input", (e) => {
         if (!/^[1-9]$/.test(e.target.value)) e.target.value = "";
       });
+      input.addEventListener("focus", (e) => {
+        try { e.target.setSelectionRange(0, 0); } catch {}
+      });
+      
+      input.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        e.target.focus({ preventScroll: true });
+        try { e.target.setSelectionRange(0, 0); } catch {}
+      });
       board.appendChild(input);
     }
   }
@@ -42,8 +51,15 @@
     for (let r = 0; r < 9; r++) {
       for (let c = 0; c < 9; c++) {
         const cell = cells[r * 9 + c];
-        cell.value = grid[r][c] || "";
-        cell.disabled = lock && grid[r][c] !== 0;
+        const v = grid[r][c] || "";
+        cell.value = v;
+        if (lock && v !== "") {
+          cell.readOnly = true;
+          cell.classList.add("given");
+        } else {
+          cell.readOnly = false;
+          cell.classList.remove("given");
+        }
       }
     }
   }
@@ -151,7 +167,7 @@
         }
       }
       count++;
-      if (count > 1) return; // Stop, wenn mehr als eine Lösung
+      if (count > 1) return;
     }
 
     backtrack();
@@ -170,7 +186,7 @@
   function fillRandomSudoku() {
     const difficulty = document.getElementById("difficulty")?.value || "medium";
     const sudoku = generateSudoku(difficulty);
-    originalPuzzle = JSON.parse(JSON.stringify(sudoku)); // 🔹 hier speichern
+    originalPuzzle = JSON.parse(JSON.stringify(sudoku));
     setGrid(sudoku, true);
   }
 
@@ -195,12 +211,10 @@
       return;
     }
 
-    // Arbeitskopie des ursprünglichen Sudokus
     const grid = JSON.parse(JSON.stringify(originalPuzzle));
 
-    // Sudoku lösen – garantiert möglich
     if (solve(grid)) {
-      setGrid(grid, false); // zeige die Lösung
+      setGrid(grid, false);
       alert("✅ Sudoku vollständig gelöst!");
     } else {
       alert("❌ Keine Lösung gefunden – sollte eigentlich nie passieren.");
@@ -220,7 +234,6 @@
     .getElementById("solveSudoku")
     ?.addEventListener("click", solveSudoku);
 
-  // Start
   createBoard();
   fillRandomSudoku();
 
@@ -249,4 +262,73 @@
       selectedCell.value = num;
     });
   }
+
+  // =============================
+  // 6️⃣ Pfeiltasten Navigation
+  // =============================
+  const cells = () => Array.from(board.querySelectorAll("input"));
+
+  function focusCell(row, col) {
+    if (row < 0 || row > 8 || col < 0 || col > 8) return;
+    const idx = row * 9 + col;
+    const all = Array.from(board.querySelectorAll("input"));
+    const target = all[idx];
+    if (target) {
+      target.focus({ preventScroll: true });
+      try {
+        const pos = target.value ? target.value.length : 0;
+        target.setSelectionRange(pos, pos);
+      } catch {}
+      all.forEach(c => c.classList.remove("active"));
+      target.classList.add("active");
+      selectedCell = target;
+    }
+  }
+
+  function currentPos() {
+    const all = cells();
+    const idx = all.indexOf(document.activeElement);
+    if (idx === -1) return { row: 0, col: 0 };
+    return { row: Math.floor(idx / 9), col: idx % 9 };
+  }
+
+  board.addEventListener("keydown", (e) => {
+    const { key } = e;
+    const { row, col } = currentPos();
+
+    if (key === "ArrowLeft") {
+      e.preventDefault();
+      focusCell(row, col - 1);
+    } else if (key === "ArrowRight") {
+      e.preventDefault();
+      focusCell(row, col + 1);
+    } else if (key === "ArrowUp") {
+      e.preventDefault();
+      focusCell(row - 1, col);
+    } else if (key === "ArrowDown") {
+      e.preventDefault();
+      focusCell(row + 1, col);
+    } else if (key === "Home") {
+      e.preventDefault();
+      focusCell(row, 0);
+    } else if (key === "End") {
+      e.preventDefault();
+      focusCell(row, 8);
+    } else if (key === "PageUp") {
+      e.preventDefault();
+      focusCell(0, col);
+    } else if (key === "PageDown") {
+      e.preventDefault();
+      focusCell(8, col);
+    }
+  });
+
+  // Klicks/Fokus synchron halten
+  board.addEventListener("focusin", (e) => {
+    if (e.target.tagName === "INPUT") {
+      selectedCell = e.target;
+      cells().forEach((c) => c.classList.remove("active"));
+      e.target.classList.add("active");
+    }
+  });
 })();

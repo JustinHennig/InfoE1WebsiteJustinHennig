@@ -26,24 +26,6 @@
     <nav class="navbar">
       <div class="inner container">
         <div class="logo">📝 Meine Notizen</div>
-        <!-- Theme-Toggle -->
-        <input
-          id="themeToggle"
-          type="checkbox"
-          role="switch"
-          aria-label="Theme umschalten"
-          hidden
-        />
-        <label
-          for="themeToggle"
-          class="theme-switch"
-          title="Dark/Light wechseln"
-        >
-          <span class="theme-switch__knob">
-            <span class="icon icon--sun" aria-hidden="true">☀️</span>
-            <span class="icon icon--moon" aria-hidden="true">🌙</span>
-          </span>
-        </label>
         <!-- Hamburger-Button (mobil sichtbar) -->
         <button
           id="navToggle"
@@ -63,6 +45,24 @@
           <li><a href="about.html">Über</a></li>
           <li><a href="kontakt.html" class="active">Kontakt</a></li>
         </ul>
+        <!-- Theme-Toggle -->
+        <input
+          id="themeToggle"
+          type="checkbox"
+          role="switch"
+          aria-label="Theme umschalten"
+          hidden
+        />
+        <label
+          for="themeToggle"
+          class="theme-switch"
+          title="Dark/Light wechseln"
+        >
+          <span class="theme-switch__knob">
+            <span class="icon icon--sun" aria-hidden="true">☀️</span>
+            <span class="icon icon--moon" aria-hidden="true">🌙</span>
+          </span>
+        </label>
       </div>
     </nav>
 
@@ -73,20 +73,31 @@
         die Zahlen 1 bis 9 enthält.
       </p>
 
-      <div id="sudoku-board" class="sudoku-board"></div>
+      <!-- NEU: Board + Keypad nebeneinander -->
+      <div class="sudoku-layout">
+        <div
+          id="sudoku-board"
+          class="sudoku-board"
+          aria-label="Sudoku Brett"
+        ></div>
 
-      <!-- Mobile Tastatur -->
-      <div class="sudoku-keypad" id="sudokuKeypad">
-        <button data-num="1">1</button>
-        <button data-num="2">2</button>
-        <button data-num="3">3</button>
-        <button data-num="4">4</button>
-        <button data-num="5">5</button>
-        <button data-num="6">6</button>
-        <button data-num="7">7</button>
-        <button data-num="8">8</button>
-        <button data-num="9">9</button>
-        <button data-num="">⌫</button>
+        <!-- Tastatur (Desktop rechts, mobil darunter) -->
+        <div
+          class="sudoku-keypad"
+          id="sudokuKeypad"
+          aria-label="Sudoku Tastatur"
+        >
+          <button data-num="1">1</button>
+          <button data-num="2">2</button>
+          <button data-num="3">3</button>
+          <button data-num="4">4</button>
+          <button data-num="5">5</button>
+          <button data-num="6">6</button>
+          <button data-num="7">7</button>
+          <button data-num="8">8</button>
+          <button data-num="9">9</button>
+          <button data-num="">⌫</button>
+        </div>
       </div>
 
       <div class="sudoku-controls mt-4">
