@@ -1,5 +1,6 @@
 (function () {
   const board = document.getElementById("sudoku-board");
+  const isMobile = () => window.matchMedia("(max-width: 640px)").matches;
   if (!board) return;
 
   // =============================
@@ -11,19 +12,34 @@
       const input = document.createElement("input");
       input.type = "text";
       input.maxLength = 1;
-      input.inputMode = "numeric";
+  
+      if (isMobile()) {
+        input.readOnly = true;
+        input.inputMode = "none";
+      } else {
+        input.readOnly = false;
+        input.inputMode = "numeric";
+      }
+  
+      input.autocomplete = "off";
+      input.autocapitalize = "off";
+      input.spellcheck = false;
+  
       input.addEventListener("input", (e) => {
         if (!/^[1-9]$/.test(e.target.value)) e.target.value = "";
       });
+  
       input.addEventListener("focus", (e) => {
-        try { e.target.setSelectionRange(0, 0); } catch {}
+        try {
+          const v = e.target.value || "";
+          e.target.setSelectionRange(v.length, v.length);
+        } catch {}
       });
-      
       input.addEventListener("mousedown", (e) => {
         e.preventDefault();
         e.target.focus({ preventScroll: true });
-        try { e.target.setSelectionRange(0, 0); } catch {}
       });
+  
       board.appendChild(input);
     }
   }
