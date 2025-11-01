@@ -969,3 +969,17 @@ button:disabled,
     font-size: calc(var(--cell) * 0.4);
   }
 }
+
+@media (hover: none) {
+  button:hover, .btn:hover { filter: none; box-shadow: none; transform: none; }
+}
+
+/* Fokus-Ring nur bei Tastatur-Nutzung anzeigen */
+button:focus:not(:focus-visible),
+.btn:focus:not(:focus-visible) { outline: none; box-shadow: none; }
+
+/* Optional: kurzes „pressed“-Design über Klasse */
+button.is-pressed, .btn.is-pressed {
+  transform: scale(.98);
+  filter: brightness(0.98);
+}
