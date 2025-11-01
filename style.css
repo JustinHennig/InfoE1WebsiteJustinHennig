@@ -7,7 +7,6 @@
   --border: #1f2937;
   --footer-bg: #000000;
   --link: #e5e7eb;
-  --cell: 56px;
   --link-hover: #9ca3af;
   --accent: #9d00ff;
   --accent-strong: #bf3bff;
@@ -17,6 +16,7 @@
   --toggle-shadow: rgba(0, 0, 0, 0.25);
   --grid-thin: rgba(255,255,255,.25);
   --grid-bold: rgba(255,255,255,.8);
+  --cell: 56px;
 }
 
 .theme-light {
@@ -957,5 +957,15 @@ button:disabled,
   .sudoku-keypad {
     grid-template-columns: repeat(5, 1fr);
     justify-content: center;
+  }
+  .sudoku-board {
+    --cell: calc((min(92vw, 400px)) / 9);
+    width: calc(var(--cell) * 9);
+  }
+  .sudoku-board input { font-size: calc(var(--cell) * 0.6); }
+  .sudoku-keypad button {
+    width: var(--cell);
+    height: var(--cell);
+    font-size: calc(var(--cell) * 0.4);
   }
 }
