@@ -15,7 +15,7 @@
     });
 
     menu.addEventListener('click', (e) => {
-      if (e.target.closest('a')) setOpen(false);  /* Link klick schließt */
+      if (e.target.closest('a')) setOpen(false);
     });
 
     document.addEventListener('keydown', (e) => {
