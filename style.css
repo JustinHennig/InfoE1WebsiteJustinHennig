@@ -1032,6 +1032,7 @@ body.hasHover .sudoku-keypad button:active {
   }
 }
 
+/* Mobile Buttons */
 body:not(.hasHover) button:hover,
 body:not(.hasHover) .btn:hover,
 body:not(.hasHover) .btn-round:hover,
@@ -1067,7 +1068,6 @@ body:not(.hasHover) .nav-toggle:active {
 
 body:not(.hasHover) .note-item:active {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
 body:not(.hasHover) .sudoku-keypad button:active {

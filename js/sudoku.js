@@ -1,43 +1,45 @@
 (function () {
   const board = document.getElementById("sudoku-board");
-  const isMobile = () => window.matchMedia("(max-width: 640px)").matches;
+  const isTouchDevice = () =>
+  (navigator.maxTouchPoints && navigator.maxTouchPoints > 0) ||
+  window.matchMedia('(pointer: coarse)').matches;
   if (!board) return;
 
   // =============================
-  // 1️⃣ BOARD ERSTELLEN
+  // 1️ BOARD ERSTELLEN
   // =============================
   function createBoard() {
-    board.innerHTML = "";
+    board.innerHTML = '';
+    const touch = isTouchDevice();
+  
     for (let i = 0; i < 81; i++) {
-      const input = document.createElement("input");
-      input.type = "text";
+      const input = document.createElement('input');
+      input.type = 'text';
       input.maxLength = 1;
   
-      if (isMobile()) {
+      if (touch) {
         input.readOnly = true;
-        input.inputMode = "none";
+        input.inputMode = 'none';
       } else {
         input.readOnly = false;
-        input.inputMode = "numeric";
+        input.inputMode = 'numeric';
       }
   
-      input.autocomplete = "off";
-      input.autocapitalize = "off";
+      input.autocomplete = 'off';
+      input.autocapitalize = 'off';
       input.spellcheck = false;
   
-      input.addEventListener("input", (e) => {
-        if (!/^[1-9]$/.test(e.target.value)) e.target.value = "";
+      input.addEventListener('input', (e) => {
+        if (!/^[1-9]$/.test(e.target.value)) e.target.value = '';
       });
   
-      input.addEventListener("focus", (e) => {
-        try {
-          const v = e.target.value || "";
-          e.target.setSelectionRange(v.length, v.length);
-        } catch {}
-      });
-      input.addEventListener("mousedown", (e) => {
+      input.addEventListener('pointerdown', (e) => {
         e.preventDefault();
-        e.target.focus({ preventScroll: true });
+        input.focus({ preventScroll: true });
+      });
+  
+      input.addEventListener('focus', (e) => {
+        try { e.target.setSelectionRange(0, 0); } catch {}
       });
   
       board.appendChild(input);
@@ -47,7 +49,7 @@
   let originalPuzzle = null;
 
   // =============================
-  // 2️⃣ GRUNDLEGENDES SUDOKU-LOGIK
+  // 2️ GRUNDLEGENDES SUDOKU-LOGIK
   // =============================
   function getGrid() {
     const cells = Array.from(board.querySelectorAll("input"));
@@ -113,7 +115,7 @@
   }
 
   // =============================
-  // 3️⃣ ZUFÄLLIGES SUDOKU GENERIEREN
+  // 3️ ZUFÄLLIGES SUDOKU GENERIEREN
   // =============================
   function shuffle(arr) {
     for (let i = arr.length - 1; i > 0; i--) {
@@ -197,7 +199,7 @@
   }
 
   // =============================
-  // 4️⃣ FUNKTIONEN FÜR BUTTONS
+  // 4️ FUNKTIONEN FÜR BUTTONS
   // =============================
   function fillRandomSudoku() {
     const difficulty = document.getElementById("difficulty")?.value || "medium";
@@ -238,7 +240,7 @@
   }
 
   // =============================
-  // 5️⃣ EVENTS
+  // 5️ EVENTS
   // =============================
   document
     .getElementById("newSudoku")
@@ -254,7 +256,7 @@
   fillRandomSudoku();
 
   // =============================
-  // 6️⃣ MOBILE ZAHLENTASTATUR
+  // 6 MOBILE ZAHLENTASTATUR
   // =============================
   const keypad = document.getElementById("sudokuKeypad");
   let selectedCell = null;
@@ -280,7 +282,7 @@
   }
 
   // =============================
-  // 6️⃣ Pfeiltasten Navigation
+  // 7 Pfeiltasten Navigation
   // =============================
   const cells = () => Array.from(board.querySelectorAll("input"));
 
