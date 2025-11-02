@@ -835,7 +835,7 @@ button:disabled,
 
 /* Sudoku */
 .sudoku-page {
-  padding: 2rem;
+  padding: 2rem 0;
   display: flex;
   align-items: center;
 }
