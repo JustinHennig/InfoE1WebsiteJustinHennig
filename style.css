@@ -357,7 +357,7 @@ button,
   transition: transform 0.04s ease, box-shadow 0.25s ease, filter 0.25s ease;
 }
 button:hover,
-.btn:hover {
+.btn:hover, button:active, .btn:active {
   filter: brightness(1.15);
   box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 60%, transparent),
     0 0 24px color-mix(in srgb, var(--accent) 60%, transparent);
