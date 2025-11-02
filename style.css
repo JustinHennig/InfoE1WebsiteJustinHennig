@@ -1013,7 +1013,8 @@ button:disabled,
 
 @media (hover: none) and (pointer: coarse) {
   button:hover,
-  .btn:hover {
+  .btn:hover, .btn-round:hover, .btn-round--del:hover, .btn-round--ok:hover, 
+  .sudoku-keypad button:hover, .kontakt-form button:hover {
     filter: none;
     transform: none;
     box-shadow: none;
