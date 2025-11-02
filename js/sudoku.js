@@ -1,50 +1,68 @@
 (function () {
   const board = document.getElementById("sudoku-board");
   const isTouchDevice = () =>
-  (navigator.maxTouchPoints && navigator.maxTouchPoints > 0) ||
-  window.matchMedia('(pointer: coarse)').matches;
+    (navigator.maxTouchPoints && navigator.maxTouchPoints > 0) ||
+    window.matchMedia("(pointer: coarse)").matches;
   if (!board) return;
 
   // =============================
   // 1️ BOARD ERSTELLEN
   // =============================
   function createBoard() {
-    board.innerHTML = '';
+    board.innerHTML = "";
     const touch = isTouchDevice();
-  
+
     for (let i = 0; i < 81; i++) {
-      const input = document.createElement('input');
-      input.type = 'text';
+      const input = document.createElement("input");
+      input.type = "text";
       input.maxLength = 1;
-  
+
       if (touch) {
         input.readOnly = true;
-        input.inputMode = 'none';
+        input.inputMode = "none";
       } else {
         input.readOnly = false;
-        input.inputMode = 'numeric';
+        input.inputMode = "numeric";
       }
-  
-      input.autocomplete = 'off';
-      input.autocapitalize = 'off';
+
+      input.autocomplete = "off";
+      input.autocapitalize = "off";
       input.spellcheck = false;
-  
-      input.addEventListener('input', (e) => {
-        if (!/^[1-9]$/.test(e.target.value)) e.target.value = '';
+
+      input.addEventListener("input", (e) => {
+        if (!/^[1-9]$/.test(e.target.value)) e.target.value = "";
       });
-  
-      input.addEventListener('pointerdown', (e) => {
+
+      input.addEventListener("pointerdown", (e) => {
         e.preventDefault();
         input.focus({ preventScroll: true });
       });
-  
-      input.addEventListener('focus', (e) => {
-        try { e.target.setSelectionRange(0, 0); } catch {}
+
+      input.addEventListener("focus", (e) => {
+        try {
+          e.target.setSelectionRange(0, 0);
+        } catch {}
       });
-  
+
       board.appendChild(input);
     }
   }
+
+  function applyInputMode() {
+    const touch = isTouchDevice();
+    board.querySelectorAll("input").forEach((input) => {
+      input.readOnly = !!touch;
+      input.inputMode = touch ? "none" : "numeric";
+    });
+  }
+
+  window
+    .matchMedia("(pointer: coarse)")
+    .addEventListener?.("change", applyInputMode);
+  window.addEventListener("orientationchange", () =>
+    setTimeout(applyInputMode, 50)
+  );
+  window.addEventListener("resize", () => setTimeout(applyInputMode, 50));
 
   let originalPuzzle = null;
 
@@ -297,7 +315,7 @@
         const pos = target.value ? target.value.length : 0;
         target.setSelectionRange(pos, pos);
       } catch {}
-      all.forEach(c => c.classList.remove("active"));
+      all.forEach((c) => c.classList.remove("active"));
       target.classList.add("active");
       selectedCell = target;
     }
