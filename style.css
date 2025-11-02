@@ -834,6 +834,12 @@ button:disabled,
 }
 
 /* Sudoku */
+.sudoku-page {
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+}
+
 .sudoku-layout {
   display: flex;
   justify-content: center;
