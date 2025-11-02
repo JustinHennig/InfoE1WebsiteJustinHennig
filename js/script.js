@@ -26,12 +26,12 @@ function watchForHover() {
 // --- Haptisches Feedback bei Button-Klick ---
 document.addEventListener("click", (e) => {
   const btn = e.target.closest(
-    "button, .btn, .btn-round, .btn-round--del, .btn-round--ok, .sudoku-keypad button, .kontakt-form buton, .note-item"
+    "button, .btn, .btn-round, .btn-round--del, .btn-round--ok, .sudoku-keypad button, .kontakt-form buton, .note-item, .them-switch"
   );
   if (!btn) return;
 
   if (navigator.vibrate) {
-    navigator.vibrate(30);
+    navigator.vibrate(10);
   }
 });
 
