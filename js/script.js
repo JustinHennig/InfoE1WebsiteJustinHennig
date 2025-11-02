@@ -150,3 +150,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+document.addEventListener('touchstart', () => {}, { passive: true });
