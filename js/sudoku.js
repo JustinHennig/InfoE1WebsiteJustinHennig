@@ -51,8 +51,17 @@
   function applyInputMode() {
     const touch = isTouchDevice();
     board.querySelectorAll("input").forEach((input) => {
-      input.readOnly = !!touch;
-      input.inputMode = touch ? "none" : "numeric";
+      if (touch) {
+        input.readOnly = true;
+        input.inputMode = "none";
+      } else {
+        if (input.classList.contains("given")) {
+          input.readOnly = true;
+        } else {
+          input.readOnly = false;
+        }
+        input.inputMode = "numeric";
+      }
     });
   }
 
@@ -89,12 +98,17 @@
         const cell = cells[r * 9 + c];
         const v = grid[r][c] || "";
         cell.value = v;
+  
+        const isGivenAlready = cell.classList.contains('given');
+  
         if (lock && v !== "") {
           cell.readOnly = true;
           cell.classList.add("given");
         } else {
-          cell.readOnly = false;
-          cell.classList.remove("given");
+          if (!isGivenAlready) {
+            cell.readOnly = false;
+            cell.classList.remove("given");
+          }
         }
       }
     }
@@ -216,6 +230,29 @@
     return removeNumbers(full, holes);
   }
 
+  // === Helpers zum Sichern/Wiederherstellen der Markierungen ===
+  function snapshotHighlights() {
+    const snap = new Map();
+    cells().forEach((c, i) => {
+      const keep = [];
+      if (c.classList.contains("is-related")) keep.push("is-related");
+      if (c.classList.contains("is-same")) keep.push("is-same");
+      if (c.classList.contains("active")) keep.push("active");
+      if (keep.length) snap.set(i, keep);
+    });
+    return snap;
+  }
+
+  function restoreHighlights(snap) {
+    const all = cells();
+    all.forEach((c) => c.classList.remove("is-related", "is-same", "active"));
+    snap.forEach((klassen, i) => {
+      const cell = all[i];
+      if (!cell) return;
+      klassen.forEach((k) => cell.classList.add(k));
+    });
+  }
+
   // =============================
   // 4️ FUNKTIONEN FÜR BUTTONS
   // =============================
@@ -246,11 +283,11 @@
       alert("❗ Bitte zuerst ein Sudoku generieren.");
       return;
     }
-
+    const snap = snapshotHighlights();
     const grid = JSON.parse(JSON.stringify(originalPuzzle));
-
     if (solve(grid)) {
       setGrid(grid, false);
+      restoreHighlights(snap);
       alert("✅ Sudoku vollständig gelöst!");
     } else {
       alert("❌ Keine Lösung gefunden – sollte eigentlich nie passieren.");
@@ -291,10 +328,12 @@
     });
 
     keypad.addEventListener("click", (e) => {
-      if (!selectedCell) return;
-      const num = e.target.dataset.num;
-      if (num === undefined) return;
+      const btn = e.target.closest("button");
+      if (!btn || !selectedCell) return;
+      if (selectedCell.classList.contains("given")) return;
 
+      const num = btn.dataset.num;
+      if (num === undefined) return;
       selectedCell.value = num;
     });
   }
@@ -329,6 +368,18 @@
   }
 
   board.addEventListener("keydown", (e) => {
+    const el = document.activeElement;
+    if (!(el && el.tagName === "INPUT")) return;
+    if (el.classList.contains("given")) {
+      const key = e.key;
+      const isDigit = /^[1-9]$/.test(key);
+      const isEditKey = ["Backspace", "Delete"].includes(key);
+      if (isDigit || isEditKey) {
+        e.preventDefault();
+        return;
+      }
+    }
+
     const { key } = e;
     const { row, col } = currentPos();
 
