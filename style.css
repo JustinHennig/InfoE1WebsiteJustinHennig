@@ -983,8 +983,15 @@ body.hasHover .kontakt-form button:hover {
 }
 
 body.hasHover .sudoku-keypad button:hover {
-  background: var(--accent);
-  color: #fff;
+  transform: scale(0.97);
+  filter: brightness(0.96);
+  box-shadow: none;
+  transition: transform 0.08s ease, filter 0.1s ease;
+  transform: translateY(1px);
+}
+
+body.hasHover .sudoku-keypad button:active {
+  filter: brightness(0.9);
 }
 
 @media (max-width: 640px) {
