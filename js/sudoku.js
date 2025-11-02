@@ -256,11 +256,23 @@
   // =============================
   // 4️ FUNKTIONEN FÜR BUTTONS
   // =============================
+  function clearAllMarks() {
+    const all = Array.from(board.querySelectorAll("input"));
+    all.forEach(c => {
+      c.classList.remove('given','active','is-related','is-same');
+      c.readOnly = false;
+    });
+  }
+  
   function fillRandomSudoku() {
     const difficulty = document.getElementById("difficulty")?.value || "medium";
+
+    clearAllMarks();
     const sudoku = generateSudoku(difficulty);
     originalPuzzle = JSON.parse(JSON.stringify(sudoku));
+  
     setGrid(sudoku, true);
+    applyInputMode();   
   }
 
   function checkSudoku() {
