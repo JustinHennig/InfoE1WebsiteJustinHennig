@@ -1021,7 +1021,8 @@ button:disabled,
   }
 
   button:active,
-  .btn:active {
+  .btn:active, .btn-round:active, .btn-round--del:active, .btn-round--ok:active,
+  .sudoku-keypad button:active, .kontakt-form button:active {
     filter: brightness(1.15);
     box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 60%, transparent),
       0 0 24px color-mix(in srgb, var(--accent) 60%, transparent);
