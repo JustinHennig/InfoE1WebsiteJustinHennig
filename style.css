@@ -1084,7 +1084,7 @@ body:not(.hasHover) .sudoku-keypad button:active {
   transform: translateY(1px);
 }
 
-body:not(.hasHover) .scroll-top {
+body:not(.hasHover) .scroll-top:active {
   outline: none;
   box-shadow: none;
   transform: none;
