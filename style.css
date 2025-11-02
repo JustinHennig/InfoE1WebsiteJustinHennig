@@ -58,9 +58,11 @@ body,
 footer,
 .navbar,
 button,
-.btn {
-  transition: background-color 0.25s ease, color 0.25s ease,
-    border-color 0.25s ease, box-shadow 0.25s ease;
+.btn,
+.navbar.is-open .nav-links,
+.sudoku-board input {
+  transition: background-color 0.2s ease, color 0.2s ease,
+    border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 * {
@@ -219,7 +221,6 @@ p {
   }
 
   .nav-links {
-    /* aus dem Grid nehmen & überlagern */
     position: absolute;
     top: 100%;
     left: 0;
@@ -228,12 +229,11 @@ p {
     display: block;
     margin: 0; padding: .5rem 1rem;
     background: var(--footer-bg);
-    box-shadow: 0 8px 16px rgba(0,0,0,.35);
     opacity: 0;
     visibility: hidden;
     transform: translateY(-6px);
     pointer-events: none;
-    transition: opacity .18s ease, transform .18s ease, visibility 0s linear .18s;
+    transition: opacity .2s ease, transform .2s ease, visibility 0s linear .2s;
   }
 
   .nav-links li {
@@ -1082,4 +1082,10 @@ body:not(.hasHover) .sudoku-keypad button:active {
   box-shadow: none;
   transition: transform 0.08s ease, filter 0.1s ease;
   transform: translateY(1px);
+}
+
+body:not(.hasHover) .scroll-top {
+  outline: none;
+  box-shadow: none;
+  transform: none;
 }
