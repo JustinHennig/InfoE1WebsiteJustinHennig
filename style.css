@@ -387,23 +387,6 @@ button:disabled,
   transition: background-color 0.25s ease;
 }
 
-@media (hover: none) and (pointer: coarse) {
-  button:hover,
-  .btn:hover {
-    filter: none;
-    transform: none;
-    box-shadow: none;
-  }
-
-  button:active,
-  .btn:active {
-    filter: brightness(1.15);
-    box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 60%, transparent),
-      0 0 24px color-mix(in srgb, var(--accent) 60%, transparent);
-    transform: translateY(1px);
-  }
-}
-
 /* Runde Buttons */
 .btn-round {
   width: 34px;
@@ -1024,5 +1007,23 @@ button:disabled,
     width: var(--cell);
     height: var(--cell);
     font-size: calc(var(--cell) * 0.4);
+  }
+}
+
+
+@media (hover: none) and (pointer: coarse) {
+  button:hover,
+  .btn:hover {
+    filter: none;
+    transform: none;
+    box-shadow: none;
+  }
+
+  button:active,
+  .btn:active {
+    filter: brightness(1.15);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 60%, transparent),
+      0 0 24px color-mix(in srgb, var(--accent) 60%, transparent);
+    transform: translateY(1px);
   }
 }
