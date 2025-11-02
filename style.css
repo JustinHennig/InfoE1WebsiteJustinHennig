@@ -1029,8 +1029,9 @@ body:not(.hasHover) .btn-round--del:active,
 body:not(.hasHover) .btn-round--ok:active,
 body:not(.hasHover) .sudoku-keypad button:active,
 body:not(.hasHover) .kontakt-form button:active {
-  filter: brightness(1.15);
-  box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 60%, transparent),
-    0 0 24px color-mix(in srgb, var(--accent) 60%, transparent);
-  transform: translateY(1px);
+  transform: scale(0.97);
+  filter: brightness(0.95);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 50%, transparent);
+  transition: transform 0.08s ease, filter 0.1s ease;
+  transform: translateY(3px);
 }
