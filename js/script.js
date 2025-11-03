@@ -31,7 +31,7 @@ document.addEventListener("click", (e) => {
   if (!btn) return;
 
   if (navigator.vibrate) {
-    navigator.vibrate(5);
+    navigator.vibrate(8);
   }
 });
 
