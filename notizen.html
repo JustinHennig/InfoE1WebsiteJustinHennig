@@ -72,24 +72,33 @@
     </nav>
 
     <!-- Hauptbereich -->
-    <main class="notes">
-      <div class="upper-part">
-        <h1>Meine Notizen</h1>
-        <textarea
-          id="noteInput"
-          placeholder="Schreibe hier deine Notiz..."
-        ></textarea>
-        <button class="btn" onclick="saveNote()">Speichern</button>
-      </div>
+  <main class="notes">
+    <div class="upper-part">
+      <h1>Meine Notizen</h1>
+      <textarea id="noteInput" placeholder="Schreibe hier deine Notiz..."></textarea>
+      <button class="btn" onclick="saveNote()">Speichern</button>
+    </div>
 
-      <div class="lower-part">
-        <h2>Offene Notizen</h2>
-        <ul id="notesList" aria-live="polite"></ul>
+    <div class="sort-controls">
+      <label for="sortSelect">Sortieren nach:</label>
+      <select id="sortSelect" onchange="changeSort(this.value)">
+        <option value="custom">Benutzerdefiniert (manuell)</option>
+        <option value="date_newest">Datum (neueste zuerst)</option>
+        <option value="date_oldest">Datum (älteste zuerst)</option>
+        <option value="alpha_asc">Alphabetisch (A–Z)</option>
+        <option value="alpha_desc">Alphabetisch (Z–A)</option>
+        <option value="done_status">Status (offen/erledigt)</option>
+      </select>
+    </div>
 
-        <h2>Abgeschlossene Notizen</h2>
-        <ul id="doneNotesList" aria-live="polite"></ul>
-      </div>
-    </main>
+    <div class="lower-part">
+      <h2>Offene Notizen</h2>
+      <ul id="notesList" aria-live="polite"></ul>
+
+      <h2>Abgeschlossene Notizen</h2>
+      <ul id="doneNotesList" aria-live="polite"></ul>
+    </div>
+  </main>
 
     <!-- Footer -->
     <footer class="footer">
