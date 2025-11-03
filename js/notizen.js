@@ -1,5 +1,9 @@
 const STORAGE_KEY = "notes";
 const SORT_KEY = "note_sort";
+const TRANSPARENT_IMG = new Image();
+TRANSPARENT_IMG.src =
+  "data:image/svg+xml;base64," +
+  btoa('<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>');
 
 /* ---- Speicherung / Laden ---- */
 function loadNotes() {
@@ -178,11 +182,14 @@ function enableDragAndDrop() {
 
   notesList.querySelectorAll(".note-item").forEach((item) => {
     item.draggable = true;
-
-    item.addEventListener("dragstart", () => {
+    item.addEventListener("dragstart", (e) => {
       item.classList.add("dragging");
+      if (e.dataTransfer) {
+        e.dataTransfer.setDragImage(TRANSPARENT_IMG, 0, 0);
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", item.dataset.id || "");
+      }
     });
-
     item.addEventListener("dragend", () => {
       item.classList.remove("dragging");
       const currentOrder = getSortOrder();
@@ -194,17 +201,21 @@ function enableDragAndDrop() {
       saveCurrentOrder();
     });
   });
-
   notesList.addEventListener("dragover", (e) => {
     e.preventDefault();
     const draggingItem = notesList.querySelector(".dragging");
     const afterElement = getDragAfterElement(notesList, e.clientY);
+    if (!draggingItem) return;
     if (afterElement == null) {
       notesList.appendChild(draggingItem);
     } else {
       notesList.insertBefore(draggingItem, afterElement);
     }
   });
+  document.addEventListener("dragend", () => {
+    const dragging = document.querySelector(".note-item.dragging");
+    if (dragging) dragging.classList.remove("dragging");
+  }, true);
 }
 
 function getDragAfterElement(container, y) {

@@ -36,3 +36,26 @@ document.addEventListener("click", (e) => {
 });
 
 watchForHover();
+
+// --- Dropdown --- //
+const btn = document.getElementById("difficultyBtn");
+const menu = document.getElementById("difficultyMenu");
+
+btn.addEventListener("click", () => menu.classList.toggle("show"));
+
+menu.querySelectorAll("div").forEach(item => {
+  item.addEventListener("click", () => {
+    const val = item.dataset.value;
+    btn.textContent = item.textContent + " ▾";
+    menu.classList.remove("show");
+    localStorage.setItem("sudoku_difficulty", val);
+    fillRandomSudoku(); // dein vorhandener Funktionsaufruf
+  });
+});
+
+// Schließen bei Klick außerhalb
+document.addEventListener("click", (e) => {
+  if (!menu.contains(e.target) && !btn.contains(e.target)) {
+    menu.classList.remove("show");
+  }
+});

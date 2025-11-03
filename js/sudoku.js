@@ -1,47 +1,181 @@
 (function () {
+  // =============================
+  // 0. DOM & CONSTANTS
+  // =============================
   const board = document.getElementById("sudoku-board");
+  if (!board) return;
+
+  const els = {
+    difficulty: document.getElementById("difficulty"),
+    timer: document.getElementById("timerDisplay"),
+    bestDiff: document.getElementById("bestDiff"),
+    bestTime: document.getElementById("bestTimeDisplay"),
+    keypad: document.getElementById("sudokuKeypad"),
+    btnNew: document.getElementById("newSudoku"),
+    btnCheck: document.getElementById("checkSudoku"),
+    btnSolve: document.getElementById("solveSudoku"),
+  };
+
+  const KEYS = { BEST: "sudoku_best_times" };
+  const DIFF_LABEL = { easy: "Einfach", medium: "Mittel", hard: "Schwer" };
+  const CELL_COUNT = 81;
+  const DIFF_CFG = {
+    easy: { holes: 35 },
+    medium: { holes: 45 },
+    hard: { holes: 55 },
+  };
+  const STORE_DIFF_KEY = "sudoku_difficulty";
+
+  // =============================
+  // 1. STATE
+  // =============================
+  const state = {
+    originalPuzzle: null,
+    selectedCell: null,
+    solvedBySystem: false,
+  };
+
+  const timer = {
+    id: null,
+    startTs: 0,
+    elapsedMs: 0,
+  };
+
+  // =============================
+  // 2. UTIL
+  // =============================
   const isTouchDevice = () =>
     (navigator.maxTouchPoints && navigator.maxTouchPoints > 0) ||
     window.matchMedia("(pointer: coarse)").matches;
-  if (!board) return;
+
+  const cells = () => Array.from(board.querySelectorAll("input"));
+
+  const fmt = (ms) => {
+    const totalSec = Math.floor(ms / 1000);
+    const m = Math.floor(totalSec / 60);
+    const s = totalSec % 60;
+    return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  };
+
+  const clone = (obj) => JSON.parse(JSON.stringify(obj));
+
+  const currentDifficulty = () => els.difficulty?.value || "medium";
+
+  // ---- Gleiches Zahl-Highlighting ----
+  function clearSameHighlights() {
+    document
+      .querySelectorAll("#sudoku-board input.is-same")
+      .forEach((el) => el.classList.remove("is-same"));
+  }
+
+  function highlightSameNumbersOf(cell) {
+    clearSameHighlights();
+    const v = cell.value?.trim();
+    if (!v) return;
+    document.querySelectorAll("#sudoku-board input").forEach((el) => {
+      if (el.value === v) el.classList.add("is-same");
+    });
+  }
 
   // =============================
-  // 1️ BOARD ERSTELLEN
+  // 3. BESTZEITEN
+  // =============================
+  function loadBestTimes() {
+    try {
+      return (
+        JSON.parse(localStorage.getItem(KEYS.BEST)) || {
+          easy: null,
+          medium: null,
+          hard: null,
+        }
+      );
+    } catch {
+      return { easy: null, medium: null, hard: null };
+    }
+  }
+  function saveBestTimes(obj) {
+    localStorage.setItem(KEYS.BEST, JSON.stringify(obj));
+  }
+  function updateBestUI() {
+    const diff = currentDifficulty();
+    const best = loadBestTimes()[diff];
+    if (els.bestDiff) els.bestDiff.textContent = DIFF_LABEL[diff];
+    if (els.bestTime) els.bestTime.textContent = best == null ? "–" : fmt(best);
+  }
+  function maybeSetBestTime() {
+    if (state.solvedBySystem) return;
+    const diff = currentDifficulty();
+    const best = loadBestTimes();
+    if (best[diff] == null || timer.elapsedMs < best[diff]) {
+      best[diff] = timer.elapsedMs;
+      saveBestTimes(best);
+    }
+    updateBestUI();
+  }
+
+  // =============================
+  // 4. TIMER
+  // =============================
+  function renderTimer() {
+    if (els.timer) els.timer.textContent = fmt(timer.elapsedMs);
+  }
+  function startTimer() {
+    stopTimer();
+    timer.startTs = performance.now();
+    timer.id = setInterval(() => {
+      timer.elapsedMs = performance.now() - timer.startTs;
+      renderTimer();
+    }, 200);
+  }
+  function stopTimer() {
+    if (timer.id) clearInterval(timer.id);
+    timer.id = null;
+  }
+  function resetTimer() {
+    stopTimer();
+    timer.elapsedMs = 0;
+    renderTimer();
+  }
+
+  // =============================
+  // 5. BOARD / UI
   // =============================
   function createBoard() {
     board.innerHTML = "";
     const touch = isTouchDevice();
 
-    for (let i = 0; i < 81; i++) {
+    for (let i = 0; i < CELL_COUNT; i++) {
       const input = document.createElement("input");
       input.type = "text";
       input.maxLength = 1;
-
-      if (touch) {
-        input.readOnly = true;
-        input.inputMode = "none";
-      } else {
-        input.readOnly = false;
-        input.inputMode = "numeric";
-      }
-
       input.autocomplete = "off";
       input.autocapitalize = "off";
       input.spellcheck = false;
-
-      input.addEventListener("input", (e) => {
-        if (!/^[1-9]$/.test(e.target.value)) e.target.value = "";
-      });
+      input.inputMode = touch ? "none" : "numeric";
+      input.readOnly = touch ? true : false;
 
       input.addEventListener("pointerdown", (e) => {
         e.preventDefault();
         input.focus({ preventScroll: true });
       });
 
+      // Ein einziger Input-Listener: validieren + ggf. lösen
+      input.addEventListener("input", (e) => {
+        if (!/^[1-9]$/.test(e.target.value)) e.target.value = "";
+        highlightSameNumbersOf(e.target);
+        setTimeout(() => {
+          if (timer.id && isCurrentSolvedCorrect()) onSolved();
+        }, 0);
+        queueSolvedCheck();
+      });
+
       input.addEventListener("focus", (e) => {
         try {
           e.target.setSelectionRange(0, 0);
         } catch {}
+        cells().forEach((c) => c.classList.remove("active"));
+        input.classList.add("active");
+        state.selectedCell = input;
       });
 
       board.appendChild(input);
@@ -50,79 +184,62 @@
 
   function applyInputMode() {
     const touch = isTouchDevice();
-    board.querySelectorAll("input").forEach((input) => {
-      if (touch) {
-        input.readOnly = true;
-        input.inputMode = "none";
-      } else {
-        if (input.classList.contains("given")) {
-          input.readOnly = true;
-        } else {
-          input.readOnly = false;
-        }
-        input.inputMode = "numeric";
-      }
+    cells().forEach((input) => {
+      input.inputMode = touch ? "none" : "numeric";
+      input.readOnly = touch || input.classList.contains("given");
     });
   }
 
-  window
-    .matchMedia("(pointer: coarse)")
-    .addEventListener?.("change", applyInputMode);
-  window.addEventListener("orientationchange", () =>
-    setTimeout(applyInputMode, 50)
-  );
-  window.addEventListener("resize", () => setTimeout(applyInputMode, 50));
+  function clearAllMarks() {
+    cells().forEach((c) => {
+      c.classList.remove("given", "active", "is-related", "is-same");
+      c.readOnly = false;
+    });
+  }
 
-  let originalPuzzle = null;
-
-  // =============================
-  // 2️ GRUNDLEGENDES SUDOKU-LOGIK
-  // =============================
   function getGrid() {
-    const cells = Array.from(board.querySelectorAll("input"));
+    const cs = cells();
     const grid = [];
     for (let r = 0; r < 9; r++) {
       grid.push(
-        cells
-          .slice(r * 9, r * 9 + 9)
-          .map((c) => (c.value ? Number(c.value) : 0))
+        cs.slice(r * 9, r * 9 + 9).map((c) => (c.value ? Number(c.value) : 0))
       );
     }
     return grid;
   }
 
   function setGrid(grid, lock = false) {
-    const cells = Array.from(board.querySelectorAll("input"));
+    const cs = cells();
     for (let r = 0; r < 9; r++) {
       for (let c = 0; c < 9; c++) {
-        const cell = cells[r * 9 + c];
+        const cell = cs[r * 9 + c];
         const v = grid[r][c] || "";
+        const wasGiven = cell.classList.contains("given");
         cell.value = v;
-  
-        const isGivenAlready = cell.classList.contains('given');
-  
+
         if (lock && v !== "") {
           cell.readOnly = true;
           cell.classList.add("given");
-        } else {
-          if (!isGivenAlready) {
-            cell.readOnly = false;
-            cell.classList.remove("given");
-          }
+        } else if (!wasGiven) {
+          cell.readOnly = false;
+          cell.classList.remove("given");
         }
       }
     }
   }
 
+  // =============================
+  // 6. SUDOKU-LOGIK
+  // =============================
   function isSafe(grid, row, col, num) {
     for (let x = 0; x < 9; x++) {
       if (grid[row][x] === num || grid[x][col] === num) return false;
     }
-    const startRow = row - (row % 3);
-    const startCol = col - (col % 3);
+    const r0 = row - (row % 3),
+      c0 = col - (col % 3);
     for (let r = 0; r < 3; r++) {
       for (let c = 0; c < 3; c++) {
-        if (grid[startRow + r][startCol + c] === num) return false;
+        if (grid[r0 + r][c0 + c] === num) return false;
       }
     }
     return true;
@@ -146,16 +263,13 @@
     return true;
   }
 
-  // =============================
-  // 3️ ZUFÄLLIGES SUDOKU GENERIEREN
-  // =============================
-  function shuffle(arr) {
+  const shuffle = (arr) => {
     for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [arr[i], arr[j]] = [arr[j], arr[i]];
     }
     return arr;
-  }
+  };
 
   function generateFullGrid(
     grid = Array.from({ length: 9 }, () => Array(9).fill(0))
@@ -178,59 +292,90 @@
     return grid;
   }
 
-  function removeNumbers(grid, holes = 45) {
-    let attempts = holes;
-    while (attempts > 0) {
-      const row = Math.floor(Math.random() * 9);
-      const col = Math.floor(Math.random() * 9);
-      if (grid[row][col] !== 0) {
-        const backup = grid[row][col];
-        grid[row][col] = 0;
-
-        const copy = JSON.parse(JSON.stringify(grid));
-        if (!hasUniqueSolution(copy)) {
-          grid[row][col] = backup;
-        } else {
-          attempts--;
-        }
-      }
-    }
-    return grid;
-  }
-
   function hasUniqueSolution(grid) {
     let count = 0;
-
+    const N = 9;
     function backtrack() {
-      for (let row = 0; row < 9; row++) {
-        for (let col = 0; col < 9; col++) {
-          if (grid[row][col] === 0) {
-            for (let num = 1; num <= 9; num++) {
-              if (isSafe(grid, row, col, num)) {
-                grid[row][col] = num;
-                backtrack();
-                grid[row][col] = 0;
-              }
-            }
-            return;
+      if (count > 1) return;
+      let rr = -1,
+        cc = -1;
+      for (let r = 0; r < N; r++) {
+        for (let c = 0; c < N; c++) {
+          if (grid[r][c] === 0) {
+            rr = r;
+            cc = c;
+            break;
           }
         }
+        if (rr !== -1) break;
       }
-      count++;
-      if (count > 1) return;
+      if (rr === -1) {
+        count++;
+        return;
+      }
+      for (let num = 1; num <= 9; num++) {
+        if (isSafe(grid, rr, cc, num)) {
+          grid[rr][cc] = num;
+          backtrack();
+          if (count > 1) {
+            grid[rr][cc] = 0;
+            return;
+          }
+          grid[rr][cc] = 0;
+        }
+      }
     }
 
     backtrack();
     return count === 1;
   }
 
+  function removeNumbers(grid, holes = 45) {
+    let attempts = holes;
+    const start = performance.now();
+    while (attempts > 0) {
+      if (performance.now() - start > 50) break;
+
+      const row = Math.floor(Math.random() * 9);
+      const col = Math.floor(Math.random() * 9);
+      if (grid[row][col] !== 0) {
+        const backup = grid[row][col];
+        grid[row][col] = 0;
+        const copy = clone(grid);
+        if (!hasUniqueSolution(copy)) grid[row][col] = backup;
+        else attempts--;
+      }
+    }
+    return grid;
+  }
+
   function generateSudoku(difficulty = "medium") {
     const full = generateFullGrid();
-    const holes = difficulty === "easy" ? 35 : difficulty === "hard" ? 55 : 45;
+    const { holes } = DIFF_CFG[difficulty] || DIFF_CFG.medium;
     return removeNumbers(full, holes);
   }
 
-  // === Helpers zum Sichern/Wiederherstellen der Markierungen ===
+  function isCurrentSolvedCorrect() {
+    const grid = getGrid();
+    for (let r = 0; r < 9; r++)
+      for (let c = 0; c < 9; c++) if (grid[r][c] === 0) return false;
+    const solved = clone(grid);
+    return (
+      solve(solved) &&
+      solved.every((row, r) => row.every((v, c) => v === grid[r][c]))
+    );
+  }
+
+  // kleine Queue, um nach Input den Check am Ende der Tick auszuführen
+  function queueSolvedCheck() {
+    setTimeout(() => {
+      if (timer.id && isCurrentSolvedCorrect()) onSolved();
+    }, 0);
+  }
+
+  // =============================
+  // 7. SNAPSHOTS (Highlights)
+  // =============================
   function snapshotHighlights() {
     const snap = new Map();
     cells().forEach((c, i) => {
@@ -242,44 +387,36 @@
     });
     return snap;
   }
-
   function restoreHighlights(snap) {
     const all = cells();
     all.forEach((c) => c.classList.remove("is-related", "is-same", "active"));
-    snap.forEach((klassen, i) => {
+    snap.forEach((classes, i) => {
       const cell = all[i];
       if (!cell) return;
-      klassen.forEach((k) => cell.classList.add(k));
+      classes.forEach((k) => cell.classList.add(k));
     });
   }
 
   // =============================
-  // 4️ FUNKTIONEN FÜR BUTTONS
+  // 8. ACTIONS (Buttons)
   // =============================
-  function clearAllMarks() {
-    const all = Array.from(board.querySelectorAll("input"));
-    all.forEach(c => {
-      c.classList.remove('given','active','is-related','is-same');
-      c.readOnly = false;
-    });
-  }
-  
   function fillRandomSudoku() {
-    const difficulty = document.getElementById("difficulty")?.value || "medium";
-
     clearAllMarks();
-    const sudoku = generateSudoku(difficulty);
-    originalPuzzle = JSON.parse(JSON.stringify(sudoku));
-  
-    setGrid(sudoku, true);
-    applyInputMode();   
+    const grid = generateSudoku(currentDifficulty());
+    state.originalPuzzle = clone(grid);
+    setGrid(grid, true);
+    applyInputMode();
+
+    state.solvedBySystem = false;
+    resetTimer();
+    updateBestUI();
+    startTimer();
   }
 
   function checkSudoku() {
     const grid = getGrid();
-    const solved = JSON.parse(JSON.stringify(grid));
+    const solved = clone(grid);
     if (!solve(solved)) return alert("❌ Keine gültige Lösung existiert!");
-
     for (let r = 0; r < 9; r++) {
       for (let c = 0; c < 9; c++) {
         if (grid[r][c] !== 0 && grid[r][c] !== solved[r][c]) {
@@ -288,113 +425,106 @@
       }
     }
     alert("✅ Alles richtig bis jetzt!");
+    if (isCurrentSolvedCorrect()) onSolved();
   }
 
   function solveSudoku() {
-    if (!originalPuzzle) {
+    if (!state.originalPuzzle) {
       alert("❗ Bitte zuerst ein Sudoku generieren.");
       return;
     }
     const snap = snapshotHighlights();
-    const grid = JSON.parse(JSON.stringify(originalPuzzle));
+    const grid = clone(state.originalPuzzle);
     if (solve(grid)) {
+      state.solvedBySystem = true;
       setGrid(grid, false);
       restoreHighlights(snap);
+      stopTimer();
       alert("✅ Sudoku vollständig gelöst!");
     } else {
       alert("❌ Keine Lösung gefunden – sollte eigentlich nie passieren.");
     }
   }
 
-  // =============================
-  // 5️ EVENTS
-  // =============================
-  document
-    .getElementById("newSudoku")
-    ?.addEventListener("click", fillRandomSudoku);
-  document
-    .getElementById("checkSudoku")
-    ?.addEventListener("click", checkSudoku);
-  document
-    .getElementById("solveSudoku")
-    ?.addEventListener("click", solveSudoku);
-
-  createBoard();
-  fillRandomSudoku();
+  function onSolved() {
+    stopTimer();
+    maybeSetBestTime();
+    alert(`🎉 Geschafft! Zeit: ${fmt(timer.elapsedMs)}`);
+  }
 
   // =============================
-  // 6 MOBILE ZAHLENTASTATUR
+  // 9. EVENTS (UI)
   // =============================
-  const keypad = document.getElementById("sudokuKeypad");
-  let selectedCell = null;
+  els.btnNew?.addEventListener("click", fillRandomSudoku);
+  els.btnCheck?.addEventListener("click", checkSudoku);
+  els.btnSolve?.addEventListener("click", solveSudoku);
+  els.difficulty?.addEventListener("change", () => {
+    localStorage.setItem(STORE_DIFF_KEY, els.difficulty.value);
+    updateBestUI();
+    fillRandomSudoku();
+  });
 
-  if (keypad) {
+  // Keypad (mobil / Desktop)
+  if (els.keypad) {
     board.addEventListener("click", (e) => {
       if (e.target.tagName === "INPUT") {
-        selectedCell = e.target;
-        board
-          .querySelectorAll("input")
-          .forEach((c) => c.classList.remove("active"));
-        selectedCell.classList.add("active");
+        state.selectedCell = e.target;
+        cells().forEach((c) => c.classList.remove("active"));
+        state.selectedCell.classList.add("active");
       }
     });
 
-    keypad.addEventListener("click", (e) => {
+    els.keypad.addEventListener("click", (e) => {
       const btn = e.target.closest("button");
-      if (!btn || !selectedCell) return;
-      if (selectedCell.classList.contains("given")) return;
-
+      if (!btn || !state.selectedCell) return;
+      if (state.selectedCell.classList.contains("given")) return;
       const num = btn.dataset.num;
       if (num === undefined) return;
-      selectedCell.value = num;
+      state.selectedCell.value = num || "";
+      highlightSameNumbersOf(selectedCell);
+      setTimeout(() => {
+        if (time.id && isCurrentSolvedCorrect()) onSolved();
+      }, 0);
+      queueSolvedCheck();
     });
   }
 
-  // =============================
-  // 7 Pfeiltasten Navigation
-  // =============================
-  const cells = () => Array.from(board.querySelectorAll("input"));
-
+  // Tastatur-Navigation
   function focusCell(row, col) {
     if (row < 0 || row > 8 || col < 0 || col > 8) return;
     const idx = row * 9 + col;
-    const all = Array.from(board.querySelectorAll("input"));
+    const all = cells();
     const target = all[idx];
-    if (target) {
-      target.focus({ preventScroll: true });
-      try {
-        const pos = target.value ? target.value.length : 0;
-        target.setSelectionRange(pos, pos);
-      } catch {}
-      all.forEach((c) => c.classList.remove("active"));
-      target.classList.add("active");
-      selectedCell = target;
-    }
+    if (!target) return;
+    target.focus({ preventScroll: true });
+    try {
+      const pos = target.value ? target.value.length : 0;
+      target.setSelectionRange(pos, pos);
+    } catch {}
+    all.forEach((c) => c.classList.remove("active"));
+    target.classList.add("active");
+    state.selectedCell = target;
   }
-
   function currentPos() {
     const all = cells();
     const idx = all.indexOf(document.activeElement);
     if (idx === -1) return { row: 0, col: 0 };
     return { row: Math.floor(idx / 9), col: idx % 9 };
   }
-
   board.addEventListener("keydown", (e) => {
     const el = document.activeElement;
     if (!(el && el.tagName === "INPUT")) return;
+
     if (el.classList.contains("given")) {
       const key = e.key;
-      const isDigit = /^[1-9]$/.test(key);
-      const isEditKey = ["Backspace", "Delete"].includes(key);
-      if (isDigit || isEditKey) {
-        e.preventDefault();
+      if (/^[1-9]$/.test(key) || ["Backspace", "Delete"].includes(key)) {
+        e.preventDefault(); // Givens nicht editierbar
         return;
       }
     }
 
     const { key } = e;
     const { row, col } = currentPos();
-
     if (key === "ArrowLeft") {
       e.preventDefault();
       focusCell(row, col - 1);
@@ -422,12 +552,33 @@
     }
   });
 
-  // Klicks/Fokus synchron halten
   board.addEventListener("focusin", (e) => {
     if (e.target.tagName === "INPUT") {
-      selectedCell = e.target;
+      state.selectedCell = e.target;
       cells().forEach((c) => c.classList.remove("active"));
       e.target.classList.add("active");
+      highlightSameNumbersOf(e.target);
     }
   });
+
+  // Reaktionsfähigkeit auf Gerätewechsel
+  window
+    .matchMedia("(pointer: coarse)")
+    .addEventListener?.("change", applyInputMode);
+  window.addEventListener("orientationchange", () =>
+    setTimeout(applyInputMode, 50)
+  );
+  window.addEventListener("resize", () => setTimeout(applyInputMode, 50));
+
+  // =============================
+  // 10. INIT
+  // =============================
+  if (els.difficulty) {
+    const saved = localStorage.getItem(STORE_DIFF_KEY);
+    if (saved && DIFF_LABEL[saved]) els.difficulty.value = saved;
+  }
+  createBoard();
+  fillRandomSudoku();
+  updateBestUI();
+  renderTimer();
 })();

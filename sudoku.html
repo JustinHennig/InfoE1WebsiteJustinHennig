@@ -73,7 +73,6 @@
         Fülle das Sudoku-Gitter aus, sodass jede Zeile, Spalte und jeder Block
         die Zahlen 1 bis 9 enthält.
       </p>
-
       <!-- NEU: Board + Keypad nebeneinander -->
       <div class="sudoku-layout">
         <div
@@ -82,26 +81,39 @@
           aria-label="Sudoku Brett"
         ></div>
 
-        <!-- Tastatur (Desktop rechts, mobil darunter) -->
-        <div
-          class="sudoku-keypad"
-          id="sudokuKeypad"
-          aria-label="Sudoku Tastatur"
-        >
-          <button data-num="1">1</button>
-          <button data-num="2">2</button>
-          <button data-num="3">3</button>
-          <button data-num="4">4</button>
-          <button data-num="5">5</button>
-          <button data-num="6">6</button>
-          <button data-num="7">7</button>
-          <button data-num="8">8</button>
-          <button data-num="9">9</button>
-          <button data-num="">⌫</button>
-        </div>
-      </div>
+        <!-- NEU: rechte Spalte -->
+        <aside class="sudoku-sidebar">
+          <div id="sudokuStats" class="mt-2" aria-live="polite">
+            ⏱️ Zeit: <span id="timerDisplay">00:00</span> &nbsp;&middot;&nbsp;
+            🏆 Bestzeit (<span id="bestDiff">Mittel</span>):
+            <span id="bestTimeDisplay">–</span>
+          </div>
 
+          <div
+            class="sudoku-keypad"
+            id="sudokuKeypad"
+            aria-label="Sudoku Tastatur"
+          >
+            <button data-num="1">1</button>
+            <button data-num="2">2</button>
+            <button data-num="3">3</button>
+            <button data-num="4">4</button>
+            <button data-num="5">5</button>
+            <button data-num="6">6</button>
+            <button data-num="7">7</button>
+            <button data-num="8">8</button>
+            <button data-num="9">9</button>
+            <button data-num="">⌫</button>
+          </div>
+        </aside>
+      </div>
       <div class="sudoku-controls mt-4">
+        <select id="difficulty" class="btn" aria-label="Schwierigkeit">
+          <option value="easy">Einfach</option>
+          <option value="medium" selected>Mittel</option>
+          <option value="hard">Schwer</option>
+        </select>
+
         <button id="newSudoku" class="btn">Neues Sudoku</button>
         <button id="checkSudoku" class="btn">Prüfen</button>
         <button id="solveSudoku" class="btn">Lösen</button>
