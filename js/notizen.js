@@ -1,4 +1,5 @@
 const STORAGE_KEY = "notes";
+const SORT_KEY = "note_sort";
 
 /* ---- Speicherung / Laden ---- */
 function loadNotes() {
@@ -19,7 +20,7 @@ function showNotes() {
   const doneList = document.getElementById("doneNotesList");
   if (!notesList || !doneList) return;
 
-  const notes = loadNotes();
+  const notes = sortNotes(loadNotes());
   notesList.innerHTML = "";
   doneList.innerHTML = "";
 
@@ -83,6 +84,8 @@ function showNotes() {
   if (doneList.children.length === 0) {
     doneList.innerHTML = `<li class="note-item"><div class="note-text">Keine abgeschlossenen Notizen.</div></li>`;
   }
+
+  enableDragAndDrop();
 }
 
 /* ---- Neue Notiz speichern ---- */
@@ -111,6 +114,43 @@ function saveNote() {
   showNotes();
 }
 
+/* ---- Sortierung ---- */
+function getSortOrder() {
+  return localStorage.getItem(SORT_KEY) || "date_newest";
+}
+
+function changeSort(order) {
+  localStorage.setItem(SORT_KEY, order);
+  showNotes();
+}
+
+function sortNotes(notes) {
+  const order = getSortOrder();
+  const sorted = [...notes];
+
+  switch (order) {
+    case "custom":
+      return sorted;
+
+    case "date_oldest":
+      sorted.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      break;
+    case "alpha_asc":
+      sorted.sort((a, b) => a.text.localeCompare(b.text, "de", { sensitivity: "base" }));
+      break;
+    case "alpha_desc":
+      sorted.sort((a, b) => b.text.localeCompare(a.text, "de", { sensitivity: "base" }));
+      break;
+    case "done_status":
+      sorted.sort((a, b) => a.done - b.done);
+      break;
+    default:
+      sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  }
+
+  return sorted;
+}
+
 /* ---- Aktionen ---- */
 function toggleDone(id) {
   const notes = loadNotes();
@@ -134,6 +174,74 @@ function autoResizeTextarea(el) {
   el.style.height = el.scrollHeight + "px";
 }
 
+/* ---- Drag & Drop ---- */
+function enableDragAndDrop() {
+  const notesList = document.getElementById("notesList");
+  if (!notesList) return;
+
+  notesList.querySelectorAll(".note-item").forEach((item) => {
+    item.draggable = true;
+
+    item.addEventListener("dragstart", () => {
+      item.classList.add("dragging");
+    });
+
+    item.addEventListener("dragend", () => {
+      item.classList.remove("dragging");
+      const currentOrder = getSortOrder();
+      if (currentOrder !== "custom") {
+        localStorage.setItem(SORT_KEY, "custom");
+        const sortSelect = document.getElementById("sortSelect");
+        if (sortSelect) sortSelect.value = "custom";
+      }
+      saveCurrentOrder();
+    });
+  });
+
+  notesList.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    const draggingItem = notesList.querySelector(".dragging");
+    const afterElement = getDragAfterElement(notesList, e.clientY);
+    if (afterElement == null) {
+      notesList.appendChild(draggingItem);
+    } else {
+      notesList.insertBefore(draggingItem, afterElement);
+    }
+  });
+}
+
+function getDragAfterElement(container, y) {
+  const draggableElements = [...container.querySelectorAll(".note-item:not(.dragging)")];
+
+  return draggableElements.reduce(
+    (closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    },
+    { offset: Number.NEGATIVE_INFINITY }
+  ).element;
+}
+
+function saveCurrentOrder() {
+  const notesList = document.getElementById("notesList");
+  if (!notesList) return;
+
+  const ids = [...notesList.children].map((li) => Number(li.dataset.id));
+  const notes = loadNotes();
+
+  const sorted = ids
+    .map((id) => notes.find((n) => n.id === id))
+    .filter(Boolean)
+    .concat(notes.filter((n) => n.done));
+
+  saveNotes(sorted);
+}
+
 /* ---- Initialisierung ---- */
 document.addEventListener("DOMContentLoaded", () => {
   showNotes();
@@ -148,5 +256,10 @@ document.addEventListener("DOMContentLoaded", () => {
         saveNote();
       }
     });
+  }
+
+  const sortSelect = document.getElementById("sortSelect");
+  if (sortSelect) {
+    sortSelect.value = getSortOrder();
   }
 });
