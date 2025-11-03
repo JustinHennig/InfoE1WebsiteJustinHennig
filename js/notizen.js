@@ -141,9 +141,6 @@ function sortNotes(notes) {
     case "alpha_desc":
       sorted.sort((a, b) => b.text.localeCompare(a.text, "de", { sensitivity: "base" }));
       break;
-    case "done_status":
-      sorted.sort((a, b) => a.done - b.done);
-      break;
     default:
       sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   }
