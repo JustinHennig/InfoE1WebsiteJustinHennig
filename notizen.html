@@ -79,6 +79,11 @@
       <button class="btn" onclick="saveNote()">Speichern</button>
     </div>
 
+    <div id="noteDrop" class="dropzone" onclick="document.getElementById('noteFile').click()">
+      Dateien hierher ziehen (.txt / .md) oder klicken zum Auswählen
+      <input id="noteFile" type="file" accept=".txt,.md" multiple style="display:none">
+    </div>
+
     <div class="sort-controls">
       <label for="sortSelect">Sortieren nach:</label>
       <select id="sortSelect" onchange="changeSort(this.value)">
