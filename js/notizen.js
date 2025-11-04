@@ -196,7 +196,11 @@ function enableDragAndDrop() {
       if (e.dataTransfer) {
         e.dataTransfer.setDragImage(TRANSPARENT_IMG, 0, 0);
         e.dataTransfer.effectAllowed = "move";
-        e.dataTransfer.setData("text/plain", item.dataset.id || "");
+        try {
+          e.dataTransfer.setData("application/x-note-id", item.dataset.id || "");
+          e.dataTransfer.setData("text/plain", "");
+          e.dataTransfer.setData("text/uri-list", "");
+        } catch {}
       }
     });
     item.addEventListener("dragend", () => {
@@ -394,3 +398,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   wireNoteImportUI();
 });
+
+window.addEventListener('dragover',  e => e.preventDefault());
+window.addEventListener('drop',      e => e.preventDefault());
