@@ -1,5 +1,6 @@
 const STORAGE_KEY = "notes";
 const SORT_KEY = "note_sort";
+const IMPORT_MODE = "perFile";
 const TRANSPARENT_IMG = new Image();
 TRANSPARENT_IMG.src =
   "data:image/svg+xml;base64," +
@@ -140,10 +141,14 @@ function sortNotes(notes) {
       sorted.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
       break;
     case "alpha_asc":
-      sorted.sort((a, b) => a.text.localeCompare(b.text, "de", { sensitivity: "base" }));
+      sorted.sort((a, b) =>
+        a.text.localeCompare(b.text, "de", { sensitivity: "base" })
+      );
       break;
     case "alpha_desc":
-      sorted.sort((a, b) => b.text.localeCompare(a.text, "de", { sensitivity: "base" }));
+      sorted.sort((a, b) =>
+        b.text.localeCompare(a.text, "de", { sensitivity: "base" })
+      );
       break;
     default:
       sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -212,14 +217,20 @@ function enableDragAndDrop() {
       notesList.insertBefore(draggingItem, afterElement);
     }
   });
-  document.addEventListener("dragend", () => {
-    const dragging = document.querySelector(".note-item.dragging");
-    if (dragging) dragging.classList.remove("dragging");
-  }, true);
+  document.addEventListener(
+    "dragend",
+    () => {
+      const dragging = document.querySelector(".note-item.dragging");
+      if (dragging) dragging.classList.remove("dragging");
+    },
+    true
+  );
 }
 
 function getDragAfterElement(container, y) {
-  const draggableElements = [...container.querySelectorAll(".note-item:not(.dragging)")];
+  const draggableElements = [
+    ...container.querySelectorAll(".note-item:not(.dragging)"),
+  ];
 
   return draggableElements.reduce(
     (closest, child) => {
@@ -254,45 +265,39 @@ function saveCurrentOrder() {
 
 // --- Parser ---
 function parseTxtToNotes(text) {
-  return text
-    .split(/\r?\n/)
-    .map(l => l.trim())
-    .filter(Boolean)
-    .map(line => ({
-      text: line,
-      done: false,
-      createdAt: new Date().toISOString()
-    }));
+  if (IMPORT_MODE === "perFile") {
+    return [
+      {
+        text: text.trim(),
+        done: false,
+        createdAt: new Date().toISOString(),
+      },
+    ];
+  }
 }
 
-function parseMdToNotes(md) {
-  // Split an Headings (#... bis ###### ...). Jeder Heading-Block => 1 Note
-  const blocks = md.split(/\n(?=(#{1,6}\s))/);
-  const notes = [];
-
-  // Voranstehender Text ohne Heading -> als eigene Notiz aufnehmen
-  if (!/^#{1,6}\s/.test(blocks[0] || '')) {
-    const pre = (blocks.shift() || '').trim();
-    if (pre) notes.push({ text: pre, done: false, createdAt: new Date().toISOString() });
+function parseMdToNotes(md, fileName = "") {
+  if (IMPORT_MODE === "perFile") {
+    // optional: Dateiname als Überschrift voranstellen
+    const content = md.trim();
+    const withTitle = fileName ? `${fileName}\n\n${content}` : content;
+    return [
+      {
+        text: withTitle,
+        done: false,
+        createdAt: new Date().toISOString(),
+      },
+    ];
   }
-
-  for (const block of blocks) {
-    const [heading, ...rest] = block.split('\n');
-    const title = heading.replace(/^#{1,6}\s*/, '').trim();
-    const body = rest.join('\n').trim();
-    const fullText = title + (body ? '\n' + body : '');
-    if (fullText) {
-      notes.push({ text: fullText, done: false, createdAt: new Date().toISOString() });
-    }
-  }
-  return notes;
 }
 
 // --- Dateien lesen & Notes erzeugen ---
 async function importNoteFiles(fileList) {
-  const files = Array.from(fileList).filter(f => /\.md$|\.txt$/i.test(f.name));
+  const files = Array.from(fileList).filter((f) =>
+    /\.md$|\.txt$/i.test(f.name)
+  );
   if (files.length === 0) {
-    alert('Bitte .txt oder .md Dateien wählen.');
+    alert("Bitte .txt oder .md Dateien wählen.");
     return;
   }
 
@@ -306,17 +311,22 @@ async function importNoteFiles(fileList) {
       continue;
     }
     const text = await file.text();
-    const notes = /\.md$/i.test(file.name) ? parseMdToNotes(text) : parseTxtToNotes(text);
+    const notes = /\.md$/i.test(file.name)
+      ? parseMdToNotes(text, file.name)
+      : parseTxtToNotes(text);
     imported.push(...notes);
   }
 
   if (imported.length === 0) {
-    alert('Keine Notizen gefunden.');
+    alert("Keine Notizen gefunden.");
     return;
   }
 
   // IDs vergeben und vorne einfügen
-  const withIds = imported.map(n => ({ id: Date.now() + Math.random(), ...n }));
+  const withIds = imported.map((n) => ({
+    id: Date.now() + Math.random(),
+    ...n,
+  }));
   const merged = withIds.concat(existing);
   saveNotes(merged);
   showNotes();
@@ -325,37 +335,36 @@ async function importNoteFiles(fileList) {
 
 // --- Dropzone Events (optional: gesamtes .notes-Element als Drop-Ziel zulassen) ---
 function wireNoteImportUI() {
-  const dz = document.getElementById('noteDrop');
-  const picker = document.getElementById('noteFile');
+  const dz = document.getElementById("noteDrop");
+  const picker = document.getElementById("noteFile");
 
   if (picker) {
-    picker.addEventListener('change', e => {
+    picker.addEventListener("change", (e) => {
       if (e.target.files?.length) importNoteFiles(e.target.files);
-      picker.value = ''; // reset, damit gleiche Datei erneut gewählt werden kann
+      picker.value = ""; // reset, damit gleiche Datei erneut gewählt werden kann
     });
   }
 
   if (dz) {
-    ['dragenter','dragover'].forEach(evt =>
-      dz.addEventListener(evt, e => {
+    ["dragenter", "dragover"].forEach((evt) =>
+      dz.addEventListener(evt, (e) => {
         e.preventDefault();
         e.stopPropagation();
-        dz.classList.add('dragover');
+        dz.classList.add("dragover");
       })
     );
-    ['dragleave','drop'].forEach(evt =>
-      dz.addEventListener(evt, e => {
+    ["dragleave", "drop"].forEach((evt) =>
+      dz.addEventListener(evt, (e) => {
         e.preventDefault();
         e.stopPropagation();
-        dz.classList.remove('dragover');
+        dz.classList.remove("dragover");
       })
     );
-    dz.addEventListener('drop', e => {
+    dz.addEventListener("drop", (e) => {
       const dt = e.dataTransfer;
       if (dt?.files?.length) importNoteFiles(dt.files);
     });
   }
-
 }
 
 /* ---- Initialisierung ---- */

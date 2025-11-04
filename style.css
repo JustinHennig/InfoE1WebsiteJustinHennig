@@ -1181,3 +1181,10 @@ body:not(.hasHover) .scroll-top:active {
   box-shadow: none;
   transform: none;
 }
+
+body:not(.hasHover) .note-item.dragging,
+body:not(.hasHover) .note-item.dragging:hover,
+body:not(.hasHover) .note-item.dragging:active {
+  transform: scale(0.95) !important;
+  opacity: 0.7;
+}
