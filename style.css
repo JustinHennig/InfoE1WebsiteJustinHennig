@@ -554,7 +554,7 @@ body.hasHover .btn-round--del:hover {
 }
 
 .note-text {
-  flex: 1;
+  flex: 1 1 auto;
   display: flex;
   align-items: center;
   min-height: 34px;
@@ -562,6 +562,13 @@ body.hasHover .btn-round--del:hover {
   border-radius: 9999px;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.note-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: auto;
 }
 
 .note-item {
@@ -644,6 +651,20 @@ body.hasHover .btn-round--del:hover {
 }
 
 @media (max-width: 640px) {
+  .note-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .note-text {
+    width: 100%;
+  }
+  .note-meta {
+    width: 100%;
+    justify-content: flex-end;
+    margin-left: 0;
+    margin-top: 0.35rem;
+  }
+
   .note-item.dragging {
     transform: scale(0.95);
   }

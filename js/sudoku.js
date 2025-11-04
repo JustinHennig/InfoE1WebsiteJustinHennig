@@ -16,7 +16,7 @@
     btnSolve: document.getElementById("solveSudoku"),
   };
 
-  const KEYS = { BEST: "sudoku_best_times" };
+  const KEYS = { BEST: "sudoku_best_times", GAME: "sudoku_game_v1" };
   const DIFF_LABEL = { easy: "Einfach", medium: "Mittel", hard: "Schwer" };
   const CELL_COUNT = 81;
   const DIFF_CFG = {
@@ -39,6 +39,7 @@
     id: null,
     startTs: 0,
     elapsedMs: 0,
+    nextAutosaveTs: 0,
   };
 
   // =============================
@@ -60,6 +61,34 @@
   const clone = (obj) => JSON.parse(JSON.stringify(obj));
 
   const currentDifficulty = () => els.difficulty?.value || "medium";
+
+  // --- Spielstand speichern --- //
+  function saveGame(running = !!timer.id) {
+    if (!state.originalPuzzle) return;
+    const data = {
+      difficulty: currentDifficulty(),
+      originalPuzzle: state.originalPuzzle,
+      grid: getGrid(),
+      elapsedMs: timer.elapsedMs,
+      running,
+      solvedBySystem: state.solvedBySystem,
+      ts: Date.now(),
+    };
+    localStorage.setItem(KEYS.GAME, JSON.stringify(data));
+  }
+
+  function loadGame() {
+    try {
+      const raw = localStorage.getItem(KEYS.GAME);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function clearGame() {
+    localStorage.removeItem(KEYS.GAME);
+  }
 
   // ---- Gleiches Zahl-Highlighting ----
   function clearSameHighlights() {
@@ -121,15 +150,24 @@
   }
   function startTimer() {
     stopTimer();
-    timer.startTs = performance.now();
+    timer.startTs = performance.now() - (timer.elapsedMs || 0);
+    timer.nextAutosaveTs = performance.now() + 1000;
     timer.id = setInterval(() => {
       timer.elapsedMs = performance.now() - timer.startTs;
       renderTimer();
+      const now = performance.now();
+      if (now >= timer.nextAutosaveTs) {
+        saveGame(true);
+        do {
+          timer.nextAutosaveTs += 1000;
+        } while (timer.nextAutosaveTs <= now);
+      }
     }, 200);
   }
   function stopTimer() {
     if (timer.id) clearInterval(timer.id);
     timer.id = null;
+    saveGame(false);
   }
   function resetTimer() {
     stopTimer();
@@ -167,6 +205,7 @@
           if (timer.id && isCurrentSolvedCorrect()) onSolved();
         }, 0);
         queueSolvedCheck();
+        saveGame();
       });
 
       input.addEventListener("focus", (e) => {
@@ -227,6 +266,51 @@
         }
       }
     }
+  }
+
+  function restoreGameIfAny() {
+    const saved = loadGame();
+    if (!saved) return false;
+
+    // Schwierigkeit laden
+    if (els.difficulty && DIFF_LABEL[saved.difficulty]) {
+      els.difficulty.value = saved.difficulty;
+    }
+
+    // Board aufbauen und füllen
+    createBoard();
+    state.originalPuzzle = clone(saved.originalPuzzle);
+    setGrid(saved.originalPuzzle, true);
+
+    const cs = cells();
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        if (saved.originalPuzzle[r][c] === 0) {
+          const idx = r * 9 + c;
+          const v = saved.grid[r][c] || "";
+          cs[idx].value = v;
+          cs[idx].readOnly = false;
+        }
+      }
+    }
+
+    state.solvedBySystem = !!saved.solvedBySystem;
+    applyInputMode();
+
+    timer.elapsedMs = saved.elapsedMs || 0;
+    renderTimer();
+
+    if (saved.running && !state.solvedBySystem) {
+      stopTimer();
+      timer.startTs = performance.now() - timer.elapsedMs;
+      timer.id = setInterval(() => {
+        timer.elapsedMs = performance.now() - timer.startTs;
+        renderTimer();
+      }, 200);
+    }
+
+    updateBestUI();
+    return true;
   }
 
   // =============================
@@ -359,9 +443,8 @@
   function isCurrentSolvedCorrect() {
     const grid = getGrid();
     for (let r = 0; r < 9; r++)
-      for (let c = 0; c < 9; c++)
-        if (grid[r][c] === 0) return false;
-  
+      for (let c = 0; c < 9; c++) if (grid[r][c] === 0) return false;
+
     const solution = getSolutionFromOriginal();
     if (!solution) return false;
     return solution.every((row, r) => row.every((v, c) => v === grid[r][c]));
@@ -419,6 +502,7 @@
     resetTimer();
     updateBestUI();
     startTimer();
+    saveGame(true);
   }
 
   function checkSudoku() {
@@ -441,7 +525,7 @@
         }
       }
     }
-  
+
     alert("✅ Alles richtig bis jetzt!");
     if (isCurrentSolvedCorrect()) onSolved();
   }
@@ -458,6 +542,7 @@
       setGrid(grid, false);
       restoreHighlights(snap);
       stopTimer();
+      saveGame(false);
       alert("✅ Sudoku vollständig gelöst!");
     } else {
       alert("❌ Keine Lösung gefunden – sollte eigentlich nie passieren.");
@@ -466,6 +551,7 @@
 
   function onSolved() {
     stopTimer();
+    clearGame();
     if (state.solvedBySystem) return;
     maybeSetBestTime();
     alert(`🎉 Geschafft! Zeit: ${fmt(timer.elapsedMs)}`);
@@ -597,7 +683,20 @@
     if (saved && DIFF_LABEL[saved]) els.difficulty.value = saved;
   }
   createBoard();
-  fillRandomSudoku();
+
+  if (!restoreGameIfAny()) {
+    fillRandomSudoku();
+  }
+
   updateBestUI();
   renderTimer();
+
+  // ===================================
+  // 11. Autosave bei Tab-/Seitenwechsel
+  // ===================================
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") saveGame(!!timer.id);
+  });
+  window.addEventListener("pagehide", () => saveGame(!!timer.id));
+  window.addEventListener("beforeunload", () => saveGame(!!timer.id));
 })();

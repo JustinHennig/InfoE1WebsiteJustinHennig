@@ -76,9 +76,13 @@ function showNotes() {
 
     actions.appendChild(okBtn);
     actions.appendChild(delBtn);
+    const meta = document.createElement("div");
+    meta.className = "note-meta";
+    meta.appendChild(dateDiv);
+    meta.appendChild(actions);
+    
     li.appendChild(textDiv);
-    li.appendChild(dateDiv);
-    li.appendChild(actions);
+    li.appendChild(meta);
 
     (note.done ? doneList : notesList).appendChild(li);
   });
