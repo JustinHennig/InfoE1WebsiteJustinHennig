@@ -171,7 +171,8 @@
 
       input.addEventListener("focus", (e) => {
         try {
-          e.target.setSelectionRange(0, 0);
+          const pos = e.target.value ? e.target.value.length : 0;
+          e.target.setSelectionRange(pos, pos);
         } catch {}
         cells().forEach((c) => c.classList.remove("active"));
         input.classList.add("active");
@@ -358,12 +359,12 @@
   function isCurrentSolvedCorrect() {
     const grid = getGrid();
     for (let r = 0; r < 9; r++)
-      for (let c = 0; c < 9; c++) if (grid[r][c] === 0) return false;
-    const solved = clone(grid);
-    return (
-      solve(solved) &&
-      solved.every((row, r) => row.every((v, c) => v === grid[r][c]))
-    );
+      for (let c = 0; c < 9; c++)
+        if (grid[r][c] === 0) return false;
+  
+    const solution = getSolutionFromOriginal();
+    if (!solution) return false;
+    return solution.every((row, r) => row.every((v, c) => v === grid[r][c]));
   }
 
   // kleine Queue, um nach Input den Check am Ende der Tick auszuführen
@@ -371,6 +372,13 @@
     setTimeout(() => {
       if (timer.id && isCurrentSolvedCorrect()) onSolved();
     }, 0);
+  }
+
+  function getSolutionFromOriginal() {
+    if (!state.originalPuzzle) return null;
+    const g = clone(state.originalPuzzle);
+    solve(g);
+    return g;
   }
 
   // =============================
@@ -414,16 +422,26 @@
   }
 
   function checkSudoku() {
+    if (!state.originalPuzzle) {
+      alert("❗ Bitte zuerst ein Sudoku generieren.");
+      return;
+    }
     const grid = getGrid();
-    const solved = clone(grid);
-    if (!solve(solved)) return alert("❌ Keine gültige Lösung existiert!");
+    const solution = getSolutionFromOriginal();
+    if (!solution) {
+      alert("❌ Keine Lösung gefunden – sollte eigentlich nie passieren.");
+      return;
+    }
+
     for (let r = 0; r < 9; r++) {
       for (let c = 0; c < 9; c++) {
-        if (grid[r][c] !== 0 && grid[r][c] !== solved[r][c]) {
-          return alert("❌ Fehlerhafte Eingabe im Sudoku!");
+        if (grid[r][c] !== 0 && grid[r][c] !== solution[r][c]) {
+          alert("❌ Fehlerhafte Eingabe im Sudoku!");
+          return;
         }
       }
     }
+  
     alert("✅ Alles richtig bis jetzt!");
     if (isCurrentSolvedCorrect()) onSolved();
   }
@@ -448,6 +466,7 @@
 
   function onSolved() {
     stopTimer();
+    if (state.solvedBySystem) return;
     maybeSetBestTime();
     alert(`🎉 Geschafft! Zeit: ${fmt(timer.elapsedMs)}`);
   }
@@ -481,9 +500,9 @@
       const num = btn.dataset.num;
       if (num === undefined) return;
       state.selectedCell.value = num || "";
-      highlightSameNumbersOf(selectedCell);
+      highlightSameNumbersOf(state.selectedCell);
       setTimeout(() => {
-        if (time.id && isCurrentSolvedCorrect()) onSolved();
+        if (timer.id && isCurrentSolvedCorrect()) onSolved();
       }, 0);
       queueSolvedCheck();
     });

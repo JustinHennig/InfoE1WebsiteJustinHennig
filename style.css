@@ -914,6 +914,7 @@ body.hasHover .kontakt-form button:hover {
   border-radius: 8px;
 }
 .sudoku-board input {
+  cursor: default;
   width: var(--cell);
   height: var(--cell);
   text-align: center;
@@ -1147,6 +1148,7 @@ body:not(.hasHover) .nav-toggle:active {
 
 body:not(.hasHover) .note-item:active {
   transform: translateY(-2px);
+  transform: scale(0.95);
 }
 
 body:not(.hasHover) .sudoku-keypad button:active {
