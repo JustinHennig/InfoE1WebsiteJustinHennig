@@ -401,3 +401,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
 window.addEventListener('dragover',  e => e.preventDefault());
 window.addEventListener('drop',      e => e.preventDefault());
+
+const notesList = document.getElementById('notesList');
+if (notesList) {
+  notesList.addEventListener('touchstart', e => {
+    e.preventDefault();
+  }, { passive: false });
+
+  notesList.addEventListener('touchmove', e => {
+    e.preventDefault();
+  }, { passive: false });
+
+  notesList.addEventListener('touchend', e => {
+    e.preventDefault();
+  }, { passive: false });
+}
