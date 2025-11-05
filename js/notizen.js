@@ -418,6 +418,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  if (localStorage.getItem('hideDndHint') === '1') {
+    const el = document.getElementById('dndHint');
+    if (el) el.remove();
+  }
+
   const sortSelect = document.getElementById("sortSelect");
   if (sortSelect) {
     sortSelect.value = getSortOrder();
@@ -428,3 +433,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 window.addEventListener("dragover", (e) => e.preventDefault());
 window.addEventListener("drop", (e) => e.preventDefault());
+
+function closeHint(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  const el = document.getElementById('dndHint');
+  if (el) el.remove();
+  localStorage.setItem('hideDndHint', '1');
+}

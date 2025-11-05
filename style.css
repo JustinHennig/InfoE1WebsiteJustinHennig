@@ -194,7 +194,7 @@ p {
   color: inherit;
 }
 
-.nav-toggle:hover {
+.hasHover .nav-toggle:hover {
   outline: none;
   box-shadow: none;
 }
@@ -345,8 +345,9 @@ p {
   transition: color 0.2s ease;
 }
 
-.scroll-top:hover {
+.hasHover .scroll-top:hover {
   color: var(--link-hover);
+  border: none;
   box-shadow: none;
   outline: none;
 }
@@ -656,6 +657,37 @@ body.hasHover .btn-round--del:hover {
   border-color: var(--accent);
   background: rgba(0,0,0,0.08);
   color: var(--text);
+}
+
+.hint {
+  margin: .5rem 0 1.25rem;
+  font-size: .95rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  padding: .5rem .75rem;
+  border-radius: 8px;
+}
+
+.hint button {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 1.15rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0 .25rem;
+  line-height: 1;
+  transition: opacity .15s ease;
+}
+
+.hasHover .hint button:hover {
+  opacity: 0.6;
+  box-shadow: none;
+  outline: none;
 }
 
 @media (max-width: 640px) {
@@ -978,13 +1010,6 @@ body.hasHover .kontakt-form button:hover {
   -moz-user-select: none;
   -ms-user-select: none;
   touch-action: manipulation;
-  box-sizing: border-box;
-  padding: 0 1px;
-  border-radius: 0;
-  line-height: var(--cell);
-  font-variant-numeric: tabular-nums;
-  -webkit-font-smoothing: antialiased;
-  transform: translateZ(0); 
 }
 .sudoku-board input::selection {
   background: transparent;

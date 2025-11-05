@@ -23,8 +23,8 @@
         }
       })();
     </script>
-    <link rel="stylesheet" href="style.css" />
     <script src="js/notizen.js"></script>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <!-- Navigation -->
@@ -97,6 +97,10 @@
 
     <div class="lower-part">
       <h2>Offene Notizen</h2>
+      <p id="dndHint" class="hint" hidden>
+        <span>💡 Tipp: Ziehe Notizen, um die Reihenfolge zu ändern.</span>
+        <button id="dndHintClose" onclick="closeHint(event)" aria-label="Hinweis schließen">×</button>
+      </p>
       <ul id="notesList" aria-live="polite"></ul>
 
       <h2>Abgeschlossene Notizen</h2>
