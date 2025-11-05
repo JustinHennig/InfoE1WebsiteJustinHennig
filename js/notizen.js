@@ -192,11 +192,11 @@ function enableDragAndDrop() {
   notesList.querySelectorAll(".note-item").forEach((item) => {
     item.draggable = true;
     item.addEventListener("dragstart", (e) => {
+      startTransitionCooldown(140);
       item.classList.add("dragging");
       if (e.dataTransfer) {
         e.dataTransfer.setDragImage(TRANSPARENT_IMG, 0, 0);
         e.dataTransfer.effectAllowed = "move";
-        e.dataTransfer.setData("text/plain", item.dataset.id || "");
         try {
           e.dataTransfer.setData(
             "application/x-note-id",
@@ -206,6 +206,17 @@ function enableDragAndDrop() {
           e.dataTransfer.setData("text/uri-list", "");
         } catch {}
       }
+    });
+    item.addEventListener("dragend", () => {
+      item.classList.remove("dragging");
+      startTransitionCooldown(140);
+      const currentOrder = getSortOrder();
+      if (currentOrder !== "custom") {
+        localStorage.setItem(SORT_KEY, "custom");
+        const sortSelect = document.getElementById("sortSelect");
+        if (sortSelect) sortSelect.value = "custom";
+      }
+      requestAnimationFrame(() => requestAnimationFrame(saveCurrentOrder));
     });
     item.addEventListener("dragend", () => {
       item.classList.remove("dragging");
@@ -276,6 +287,13 @@ function saveCurrentOrder() {
     .concat(notes.filter((n) => n.done));
 
   saveNotes(sorted);
+}
+
+function startTransitionCooldown(ms = 140) {
+  document.body.classList.add("no-transform-transition");
+  setTimeout(() => {
+    document.body.classList.remove("no-transform-transition");
+  }, ms);
 }
 
 /* ====== Drag-&-Drop Datei-Import (.txt / .md) ====== */

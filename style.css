@@ -582,6 +582,9 @@ body.hasHover .btn-round--del:hover {
   align-items: center;
   gap: 0.6rem;
   transition: transform 0.1s ease, box-shadow 0.2s ease;
+  will-change: transform;
+  -webkit-user-select: none;
+  user-select: none;
 }
 .note-item:hover {
   transform: translateY(-2px);
@@ -616,6 +619,10 @@ body.hasHover .btn-round--del:hover {
 
 .note-item.drag-over {
   border: 2px dashed var(--accent, #4caf50);
+}
+
+.no-transform-transition .note-item {
+  transition: none !important;
 }
 
 .sort-controls {
