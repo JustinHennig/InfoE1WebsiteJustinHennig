@@ -611,6 +611,7 @@ body.hasHover .btn-round--del:hover {
 .note-item.dragging {
   opacity: 0.7;
   transform: scale(0.98);
+  transition: none !important;
 }
 
 .note-item.drag-over {

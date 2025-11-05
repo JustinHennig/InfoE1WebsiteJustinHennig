@@ -198,7 +198,10 @@ function enableDragAndDrop() {
         e.dataTransfer.effectAllowed = "move";
         e.dataTransfer.setData("text/plain", item.dataset.id || "");
         try {
-          e.dataTransfer.setData("application/x-note-id", item.dataset.id || "");
+          e.dataTransfer.setData(
+            "application/x-note-id",
+            item.dataset.id || ""
+          );
           e.dataTransfer.setData("text/plain", "");
           e.dataTransfer.setData("text/uri-list", "");
         } catch {}
@@ -206,13 +209,18 @@ function enableDragAndDrop() {
     });
     item.addEventListener("dragend", () => {
       item.classList.remove("dragging");
+
       const currentOrder = getSortOrder();
       if (currentOrder !== "custom") {
         localStorage.setItem(SORT_KEY, "custom");
         const sortSelect = document.getElementById("sortSelect");
         if (sortSelect) sortSelect.value = "custom";
       }
-      saveCurrentOrder();
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          saveCurrentOrder();
+        });
+      });
     });
   });
   notesList.addEventListener("dragover", (e) => {
@@ -400,5 +408,5 @@ document.addEventListener("DOMContentLoaded", () => {
   wireNoteImportUI();
 });
 
-window.addEventListener('dragover',  e => e.preventDefault());
-window.addEventListener('drop',      e => e.preventDefault());
+window.addEventListener("dragover", (e) => e.preventDefault());
+window.addEventListener("drop", (e) => e.preventDefault());
