@@ -1198,7 +1198,10 @@ body:not(.hasHover) .btn-round--del:hover,
 body:not(.hasHover) .btn-round--ok:hover,
 body:not(.hasHover) .sudoku-keypad button:hover,
 body:not(.hasHover) .kontakt-form button:hover,
-body:not(.hasHover) .note-item {
+body:not(.hasHover) .note-item,
+body:not(.hasHover) .scroll-top,
+body:not(.hasHover) .nav-toggle:active {
+  outline: none;
   filter: none;
   transform: none;
   box-shadow: none;
@@ -1218,12 +1221,6 @@ body:not(.hasHover) .kontakt-form button:active {
   transform: translateY(1px);
 }
 
-body:not(.hasHover) .nav-toggle:active {
-  outline: none;
-  box-shadow: none;
-  transform: none;
-}
-
 body:not(.hasHover) .note-item:active {
   transform: translateY(-2px);
   transform: scale(0.95);
@@ -1238,9 +1235,11 @@ body:not(.hasHover) .sudoku-keypad button:active {
 }
 
 body:not(.hasHover) .scroll-top:active {
-  outline: none;
+  color: var(--link-hover);
+  filter: none;
+  border: none;
   box-shadow: none;
-  transform: none;
+  outline: none;
 }
 
 body:not(.hasHover) .note-item.dragging,
