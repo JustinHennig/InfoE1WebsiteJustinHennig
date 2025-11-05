@@ -617,14 +617,6 @@ body.hasHover .btn-round--del:hover {
   border: 2px dashed var(--accent, #4caf50);
 }
 
-.note-item, .note-text, .note-actions, .note-date {
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
-  -webkit-user-drag: none;
-  touch-action: none;
-}
-
 .sort-controls {
   display: flex;
   align-items: center;

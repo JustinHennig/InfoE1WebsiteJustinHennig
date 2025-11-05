@@ -80,7 +80,7 @@ function showNotes() {
     meta.className = "note-meta";
     meta.appendChild(dateDiv);
     meta.appendChild(actions);
-    
+
     li.appendChild(textDiv);
     li.appendChild(meta);
 
@@ -196,6 +196,7 @@ function enableDragAndDrop() {
       if (e.dataTransfer) {
         e.dataTransfer.setDragImage(TRANSPARENT_IMG, 0, 0);
         e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", item.dataset.id || "");
         try {
           e.dataTransfer.setData("application/x-note-id", item.dataset.id || "");
           e.dataTransfer.setData("text/plain", "");
@@ -401,18 +402,3 @@ document.addEventListener("DOMContentLoaded", () => {
 
 window.addEventListener('dragover',  e => e.preventDefault());
 window.addEventListener('drop',      e => e.preventDefault());
-
-const notesList = document.getElementById('notesList');
-if (notesList) {
-  notesList.addEventListener('touchstart', e => {
-    e.preventDefault();
-  }, { passive: false });
-
-  notesList.addEventListener('touchmove', e => {
-    e.preventDefault();
-  }, { passive: false });
-
-  notesList.addEventListener('touchend', e => {
-    e.preventDefault();
-  }, { passive: false });
-}
