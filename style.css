@@ -978,6 +978,13 @@ body.hasHover .kontakt-form button:hover {
   -moz-user-select: none;
   -ms-user-select: none;
   touch-action: manipulation;
+  box-sizing: border-box;
+  padding: 0 1px;
+  border-radius: 0;
+  line-height: var(--cell);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  transform: translateZ(0); 
 }
 .sudoku-board input::selection {
   background: transparent;
