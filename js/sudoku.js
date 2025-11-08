@@ -254,13 +254,13 @@
       for (let c = 0; c < 9; c++) {
         const cell = cs[r * 9 + c];
         const v = grid[r][c] || "";
-        const wasGiven = cell.classList.contains("given");
         cell.value = v;
-
+  
+        // Neu: immer konsistent setzen/entfernen – unabhängig vom alten Zustand
         if (lock && v !== "") {
           cell.readOnly = true;
           cell.classList.add("given");
-        } else if (!wasGiven) {
+        } else {
           cell.readOnly = false;
           cell.classList.remove("given");
         }
@@ -535,11 +535,25 @@
       alert("❗ Bitte zuerst ein Sudoku generieren.");
       return;
     }
+    const original = clone(state.originalPuzzle);
+  
     const snap = snapshotHighlights();
     const grid = clone(state.originalPuzzle);
+  
     if (solve(grid)) {
       state.solvedBySystem = true;
       setGrid(grid, false);
+      const cs = cells();
+      for (let r = 0; r < 9; r++) {
+        for (let c = 0; c < 9; c++) {
+          if (original[r][c] !== 0) {
+            const cell = cs[r * 9 + c];
+            cell.classList.add("given");
+            cell.readOnly = true;
+          }
+        }
+      }
+  
       restoreHighlights(snap);
       stopTimer();
       saveGame(false);
@@ -556,6 +570,42 @@
     maybeSetBestTime();
     alert(`🎉 Geschafft! Zeit: ${fmt(timer.elapsedMs)}`);
   }
+
+  const fileInput = document.getElementById("sudokuPhoto");
+  const btnImport = document.getElementById("importSudoku");
+
+  async function importFromPhoto(file) {
+    const fd = new FormData();
+    fd.append("file", file);
+
+    const res = await fetch("http://localhost:8000/api/sudoku/parse", {
+      method: "POST",
+      body: fd,
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      alert("❌ Import fehlgeschlagen: " + (err.error || res.status));
+      return;
+    }
+
+    const { grid, confidence } = await res.json();
+    console.log("OCR confidence:", confidence);
+
+    state.originalPuzzle = JSON.parse(JSON.stringify(grid));
+    setGrid(grid, true);
+    applyInputMode();
+    state.solvedBySystem = false;
+    resetTimer();
+    updateBestUI();
+    startTimer();
+  }
+
+  btnImport?.addEventListener("click", () => {
+    const f = fileInput?.files?.[0];
+    if (!f) return alert("Bitte ein Foto auswählen.");
+    importFromPhoto(f);
+  });
 
   // =============================
   // 9. EVENTS (UI)
@@ -699,4 +749,77 @@
   });
   window.addEventListener("pagehide", () => saveGame(!!timer.id));
   window.addEventListener("beforeunload", () => saveGame(!!timer.id));
+
+  // =============================
+  // 12. EDITIEREN NACH IMPORT
+  // =============================
+  let editMode = false;
+
+  const btnEdit  = document.getElementById("editImported");
+  const btnSave  = document.getElementById("saveImported");
+
+  function setEditMode(on) {
+    editMode = on;
+    if (btnEdit) btnEdit.disabled = on;
+    if (btnSave) btnSave.disabled = !on;
+
+    // Givens vorübergehend editierbar machen
+    cells().forEach((c) => {
+      if (c.classList.contains("given")) {
+        c.readOnly = !on;                 // im Editmodus: editierbar
+        c.classList.toggle("given--editing", on);
+      }
+    });
+  }
+
+  // Optional: Im Editmodus per Alt+Klick den "Given"-Status eines Feldes toggeln
+  board.addEventListener("click", (e) => {
+    if (!editMode) return;
+    const el = e.target;
+    if (el && el.tagName === "INPUT" && e.altKey) {
+      el.classList.toggle("given");
+      el.readOnly = el.classList.contains("given") ? true : false;
+      el.classList.toggle("given--editing", editMode && el.classList.contains("given"));
+    }
+  });
+
+  // „Bearbeiten“: OCR-Ergebnis korrigierbar machen
+  btnEdit?.addEventListener("click", () => {
+    if (!state.originalPuzzle) {
+      alert("Zuerst ein Sudoku importieren/erkennen.");
+      return;
+    }
+    // Während der Korrektur Timer pausieren (optional)
+    stopTimer();
+    setEditMode(true);
+  });
+
+  // „Speichern“: Aktuelle Eingaben als neue Vorlage (Givens) einfrieren
+  btnSave?.addEventListener("click", () => {
+    // 1) Werte normalisieren (nur 1–9; sonst 0)
+    const grid = getGrid();
+
+    // 2) Diese korrigierte Vorlage als neue "originalPuzzle" übernehmen
+    state.originalPuzzle = grid.map(row => row.slice());
+
+    // 3) Board neu setzen & Givens festziehen
+    //    Regel: Jede Nicht-Null wird wieder als "given" gesperrt.
+    setGrid(state.originalPuzzle, true);
+
+    // 4) Editmodus aus; Styling bereinigen
+    setEditMode(false);
+    clearSameHighlights();
+    // Optional: aktive Zelle zurücksetzen
+    state.selectedCell = null;
+
+    // 5) Timer sauber neu starten – jetzt gilt die korrigierte Vorlage als Start
+    state.solvedBySystem = false;
+    resetTimer();
+    updateBestUI();
+    startTimer();
+
+    // 6) Persistieren
+    saveGame(true);
+    alert("✅ Änderungen übernommen. Viel Erfolg!");
+  });
 })();

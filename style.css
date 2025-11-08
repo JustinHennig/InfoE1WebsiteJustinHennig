@@ -1141,6 +1141,10 @@ body.hasHover .sudoku-keypad button:active {
   gap: 1rem;
 }
 
+.photo-import {
+  margin: 1rem 0;
+}
+
 @media (max-width: 640px) {
   .sudoku-layout {
     flex-direction: column;

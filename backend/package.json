@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "fastapi": "^0.0.8",
+    "numpy": "^0.0.1",
+    "tesseract-ocr": "^1.0.0",
+    "uvicorn": "^0.0.1-security"
+  }
+}
