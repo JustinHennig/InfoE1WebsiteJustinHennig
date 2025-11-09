@@ -17,7 +17,7 @@
   };
 
   const KEYS = { BEST: "sudoku_best_times", GAME: "sudoku_game_v1" };
-  const DIFF_LABEL = { easy: "Einfach", medium: "Mittel", hard: "Schwer", custom: "Benutzerdefiniert" };
+  const DIFF_LABEL = { easy: "Einfach", medium: "Mittel", hard: "Schwer", custom: "Custom" };
   const CELL_COUNT = 81;
   const DIFF_CFG = {
     easy: { holes: 35 },
