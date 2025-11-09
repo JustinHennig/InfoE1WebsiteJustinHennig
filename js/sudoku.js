@@ -578,7 +578,7 @@
     const fd = new FormData();
     fd.append("file", file);
 
-    const res = await fetch("http://localhost:8000/api/sudoku/parse", {
+    const res = await fetch("https://justinnnnnn-demo-test.hf.space/api/sudoku/parse", {
       method: "POST",
       body: fd,
     });
