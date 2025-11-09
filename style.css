@@ -1219,12 +1219,6 @@ body.hasHover .sudoku-keypad button:active {
   .sudoku-keypad button:active {
     background: rgba(255,255,255,0.06);
   }
-
-  .sudoku-controls .btn{
-    padding: 0;
-    background: transparent;
-    margin: 0 1rem;
-  }
   
 }
 
