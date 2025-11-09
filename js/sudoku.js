@@ -17,7 +17,7 @@
   };
 
   const KEYS = { BEST: "sudoku_best_times", GAME: "sudoku_game_v1" };
-  const DIFF_LABEL = { easy: "Einfach", medium: "Mittel", hard: "Schwer" };
+  const DIFF_LABEL = { easy: "Einfach", medium: "Mittel", hard: "Schwer", custom: "Benutzerdefiniert" };
   const CELL_COUNT = 81;
   const DIFF_CFG = {
     easy: { holes: 35 },
@@ -491,8 +491,41 @@
   // =============================
   // 8. ACTIONS (Buttons)
   // =============================
+  const editBar = document.getElementById("editBar");
+  const btnEdit = document.getElementById("editImported");
+  const btnSave = document.getElementById("saveImported");
+
+  function showEditBar(on) {
+    if (editBar) editBar.hidden = !on;
+  }
+
+  let editMode = false;
+  function setEditMode(on) {
+    editMode = on;
+  
+    if (btnEdit) btnEdit.disabled = on;
+    if (btnSave) btnSave.disabled = !on;
+  
+    if (on) {
+      cells().forEach((c) => {
+        c.classList.remove("given");
+        c.classList.remove("given--editing");
+        c.readOnly = false;
+      });
+    } else {
+      if (state.originalPuzzle) setGrid(state.originalPuzzle, true);
+    }
+  }
+
   function fillRandomSudoku() {
     showEditBar(false);
+
+    if (currentDifficulty() === "custom" && els.difficulty) {
+      els.difficulty.value = "medium";
+      localStorage.setItem(STORE_DIFF_KEY, "medium");
+      updateBestUI();
+    }
+
     clearAllMarks();
     const grid = generateSudoku(currentDifficulty());
     state.originalPuzzle = clone(grid);
@@ -598,41 +631,45 @@
   async function importFromPhoto(file) {
     const fd = new FormData();
     fd.append("file", file);
-  
+
     setImportLoading(true);
     try {
-      const res = await fetch("https://justinnnnnn-demo-test.hf.space/api/sudoku/parse", {
-        method: "POST",
-        body: fd,
-      });
+      const res = await fetch(
+        "https://justinnnnnn-demo-test.hf.space/api/sudoku/parse",
+        {
+          method: "POST",
+          body: fd,
+        }
+      );
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error(err.error || `HTTP ${res.status}`);
       }
-  
+
       const { grid, confidence } = await res.json();
       console.log("OCR confidence:", confidence);
-  
+
       // Board setzen
       state.originalPuzzle = JSON.parse(JSON.stringify(grid));
-      setGrid(grid, true);          // markiert vorhandene Ziffern als .given
+      setGrid(grid, true);
+      if (els.difficulty) {
+        els.difficulty.value = "custom";
+        localStorage.setItem(STORE_DIFF_KEY, "custom");
+        updateBestUI();
+      }
       applyInputMode();
-  
+
       // NICHT den Timer starten – wir gehen direkt in den Edit-Modus
       stopTimer();
       state.solvedBySystem = false;
       resetTimer();
       updateBestUI();
-  
+
       // 👉 sofort Bearbeiten aktivieren und Leiste zeigen
       showEditBar(true);
       setEditMode(true);
       if (btnSave) btnSave.disabled = false;
-  
-      // optional: erste Zelle fokussieren
-      const first = board.querySelector("input");
-      first?.focus({ preventScroll: true });
-  
+
     } catch (e) {
       alert("❌ Import fehlgeschlagen: " + (e.message || e));
     } finally {
@@ -797,45 +834,6 @@
   // =============================
   // 12. EDITIEREN NACH IMPORT
   // =============================
-  let editMode = false;
-
-  const editBar = document.getElementById("editBar");
-  const btnEdit = document.getElementById("editImported");
-  const btnSave = document.getElementById("saveImported");
-
-  function showEditBar(on) {
-    if (editBar) editBar.hidden = !on;
-  }
-
-  function setEditMode(on) {
-    editMode = on;
-    if (btnEdit) btnEdit.disabled = on;
-    if (btnSave) btnSave.disabled = !on;
-
-    // Givens vorübergehend editierbar machen
-    cells().forEach((c) => {
-      if (c.classList.contains("given")) {
-        c.readOnly = !on; // im Editmodus: editierbar
-        c.classList.toggle("given--editing", on);
-      }
-    });
-  }
-
-  // Optional: Im Editmodus per Alt+Klick den "Given"-Status eines Feldes toggeln
-  board.addEventListener("click", (e) => {
-    if (!editMode) return;
-    const el = e.target;
-    if (el && el.tagName === "INPUT" && e.altKey) {
-      el.classList.toggle("given");
-      el.readOnly = el.classList.contains("given") ? true : false;
-      el.classList.toggle(
-        "given--editing",
-        editMode && el.classList.contains("given")
-      );
-    }
-  });
-
-  // „Bearbeiten“: OCR-Ergebnis korrigierbar machen
   btnEdit?.addEventListener("click", () => {
     if (!state.originalPuzzle) return alert("Zuerst importieren.");
     stopTimer();
@@ -843,31 +841,20 @@
     if (btnSave) btnSave.disabled = false;
   });
 
-  // „Speichern“: Aktuelle Eingaben als neue Vorlage (Givens) einfrieren
   btnSave?.addEventListener("click", () => {
-    // 1) Werte normalisieren (nur 1–9; sonst 0)
     const grid = getGrid();
-
-    // 2) Diese korrigierte Vorlage als neue "originalPuzzle" übernehmen
     state.originalPuzzle = grid.map((row) => row.slice());
-
-    // 3) Board neu setzen & Givens festziehen
-    //    Regel: Jede Nicht-Null wird wieder als "given" gesperrt.
     setGrid(state.originalPuzzle, true);
-
-    // 4) Editmodus aus; Styling bereinigen
     setEditMode(false);
     clearSameHighlights();
-    // Optional: aktive Zelle zurücksetzen
     state.selectedCell = null;
 
-    // 5) Timer sauber neu starten – jetzt gilt die korrigierte Vorlage als Start
+
     state.solvedBySystem = false;
     resetTimer();
     updateBestUI();
     startTimer();
 
-    // 6) Persistieren
     saveGame(true);
     showEditBar(false);
     setEditMode(false);
