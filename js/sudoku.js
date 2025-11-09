@@ -255,7 +255,7 @@
         const cell = cs[r * 9 + c];
         const v = grid[r][c] || "";
         cell.value = v;
-  
+
         // Neu: immer konsistent setzen/entfernen – unabhängig vom alten Zustand
         if (lock && v !== "") {
           cell.readOnly = true;
@@ -492,6 +492,7 @@
   // 8. ACTIONS (Buttons)
   // =============================
   function fillRandomSudoku() {
+    showEditBar(false);
     clearAllMarks();
     const grid = generateSudoku(currentDifficulty());
     state.originalPuzzle = clone(grid);
@@ -531,15 +532,16 @@
   }
 
   function solveSudoku() {
+    showEditBar(false);
     if (!state.originalPuzzle) {
       alert("❗ Bitte zuerst ein Sudoku generieren.");
       return;
     }
     const original = clone(state.originalPuzzle);
-  
+
     const snap = snapshotHighlights();
     const grid = clone(state.originalPuzzle);
-  
+
     if (solve(grid)) {
       state.solvedBySystem = true;
       setGrid(grid, false);
@@ -553,7 +555,7 @@
           }
         }
       }
-  
+
       restoreHighlights(snap);
       stopTimer();
       saveGame(false);
@@ -571,40 +573,81 @@
     alert(`🎉 Geschafft! Zeit: ${fmt(timer.elapsedMs)}`);
   }
 
+  // Foto Import //
   const fileInput = document.getElementById("sudokuPhoto");
   const btnImport = document.getElementById("importSudoku");
+
+  function setImportLoading(on) {
+    if (!btnImport) return;
+    btnImport.disabled = on;
+    btnImport.classList.toggle("is-loading", on);
+    btnImport.setAttribute("aria-busy", on ? "true" : "false");
+
+    // Text temporär ersetzen
+    if (on) {
+      btnImport.dataset.labelOriginal ??= btnImport.textContent;
+      btnImport.textContent = "Importieren";
+    } else {
+      btnImport.textContent = btnImport.dataset.labelOriginal || "Importieren";
+    }
+
+    // optional: währenddessen Datei-Wechsel verhindern
+    if (fileInput) fileInput.disabled = on;
+  }
 
   async function importFromPhoto(file) {
     const fd = new FormData();
     fd.append("file", file);
-
-    const res = await fetch("https://justinnnnnn-demo-test.hf.space/api/sudoku/parse", {
-      method: "POST",
-      body: fd,
-    });
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      alert("❌ Import fehlgeschlagen: " + (err.error || res.status));
-      return;
+  
+    setImportLoading(true);
+    try {
+      const res = await fetch("https://justinnnnnn-demo-test.hf.space/api/sudoku/parse", {
+        method: "POST",
+        body: fd,
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `HTTP ${res.status}`);
+      }
+  
+      const { grid, confidence } = await res.json();
+      console.log("OCR confidence:", confidence);
+  
+      // Board setzen
+      state.originalPuzzle = JSON.parse(JSON.stringify(grid));
+      setGrid(grid, true);          // markiert vorhandene Ziffern als .given
+      applyInputMode();
+  
+      // NICHT den Timer starten – wir gehen direkt in den Edit-Modus
+      stopTimer();
+      state.solvedBySystem = false;
+      resetTimer();
+      updateBestUI();
+  
+      // 👉 sofort Bearbeiten aktivieren und Leiste zeigen
+      showEditBar(true);
+      setEditMode(true);
+      if (btnSave) btnSave.disabled = false;
+  
+      // optional: erste Zelle fokussieren
+      const first = board.querySelector("input");
+      first?.focus({ preventScroll: true });
+  
+    } catch (e) {
+      alert("❌ Import fehlgeschlagen: " + (e.message || e));
+    } finally {
+      setImportLoading(false);
     }
-
-    const { grid, confidence } = await res.json();
-    console.log("OCR confidence:", confidence);
-
-    state.originalPuzzle = JSON.parse(JSON.stringify(grid));
-    setGrid(grid, true);
-    applyInputMode();
-    state.solvedBySystem = false;
-    resetTimer();
-    updateBestUI();
-    startTimer();
   }
 
-  btnImport?.addEventListener("click", () => {
+  btnImport?.addEventListener("click", async () => {
     const f = fileInput?.files?.[0];
-    if (!f) return alert("Bitte ein Foto auswählen.");
-    importFromPhoto(f);
+    if (!f) {
+      alert("Bitte ein Foto auswählen.");
+      return;
+    }
+    if (btnImport.disabled) return;
+    await importFromPhoto(f);
   });
 
   // =============================
@@ -614,6 +657,7 @@
   els.btnCheck?.addEventListener("click", checkSudoku);
   els.btnSolve?.addEventListener("click", solveSudoku);
   els.difficulty?.addEventListener("change", () => {
+    showEditBar(false);
     localStorage.setItem(STORE_DIFF_KEY, els.difficulty.value);
     updateBestUI();
     fillRandomSudoku();
@@ -755,8 +799,13 @@
   // =============================
   let editMode = false;
 
-  const btnEdit  = document.getElementById("editImported");
-  const btnSave  = document.getElementById("saveImported");
+  const editBar = document.getElementById("editBar");
+  const btnEdit = document.getElementById("editImported");
+  const btnSave = document.getElementById("saveImported");
+
+  function showEditBar(on) {
+    if (editBar) editBar.hidden = !on;
+  }
 
   function setEditMode(on) {
     editMode = on;
@@ -766,7 +815,7 @@
     // Givens vorübergehend editierbar machen
     cells().forEach((c) => {
       if (c.classList.contains("given")) {
-        c.readOnly = !on;                 // im Editmodus: editierbar
+        c.readOnly = !on; // im Editmodus: editierbar
         c.classList.toggle("given--editing", on);
       }
     });
@@ -779,19 +828,19 @@
     if (el && el.tagName === "INPUT" && e.altKey) {
       el.classList.toggle("given");
       el.readOnly = el.classList.contains("given") ? true : false;
-      el.classList.toggle("given--editing", editMode && el.classList.contains("given"));
+      el.classList.toggle(
+        "given--editing",
+        editMode && el.classList.contains("given")
+      );
     }
   });
 
   // „Bearbeiten“: OCR-Ergebnis korrigierbar machen
   btnEdit?.addEventListener("click", () => {
-    if (!state.originalPuzzle) {
-      alert("Zuerst ein Sudoku importieren/erkennen.");
-      return;
-    }
-    // Während der Korrektur Timer pausieren (optional)
+    if (!state.originalPuzzle) return alert("Zuerst importieren.");
     stopTimer();
     setEditMode(true);
+    if (btnSave) btnSave.disabled = false;
   });
 
   // „Speichern“: Aktuelle Eingaben als neue Vorlage (Givens) einfrieren
@@ -800,7 +849,7 @@
     const grid = getGrid();
 
     // 2) Diese korrigierte Vorlage als neue "originalPuzzle" übernehmen
-    state.originalPuzzle = grid.map(row => row.slice());
+    state.originalPuzzle = grid.map((row) => row.slice());
 
     // 3) Board neu setzen & Givens festziehen
     //    Regel: Jede Nicht-Null wird wieder als "given" gesperrt.
@@ -820,6 +869,8 @@
 
     // 6) Persistieren
     saveGame(true);
+    showEditBar(false);
+    setEditMode(false);
     alert("✅ Änderungen übernommen. Viel Erfolg!");
   });
 })();
